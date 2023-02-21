@@ -1,0 +1,148 @@
+import logging
+
+# Create your views here.
+import platform
+
+from rest_framework import viewsets, status, filters
+from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+
+from captcha.models import Captcha
+from .models import Inbound, Certificate, User
+from .pagination import InboundPagination
+from .serializers import InboundSerializer, UserTokenObtainPairSerializer, InboundStatusSerializer, \
+    CertificateSerializer, UserSerializer
+from .utils import check_captcha
+
+logger = logging.getLogger(__name__)
+
+
+class InboundViewSet(viewsets.ModelViewSet):
+    serializer_class = InboundSerializer
+    queryset = Inbound.objects.all()
+    # authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    pagination_class = InboundPagination
+
+    def destroy(self, request, *args, **kwargs):
+        id = kwargs.get("pk")
+        logger.info(f"Requested to delete inbound id {id}")
+        if id:
+            instance = Inbound.objects.filter(id=id).first()
+            if instance:
+                instance.delete()
+                logger.info(f"Inbound id {id} deleted.")
+            return Response({}, status=status.HTTP_200_OK)
+        return Response({}, status=status.HTTP_400_BAD_REQUEST)
+
+    def perform_update(self, serializer):
+        super(InboundViewSet, self).perform_update(serializer)
+        logger.info("Inbounds updated")
+        Inbound.create_config_json()
+        if platform.system() == "Linux":
+            Inbound.restart_xray()
+
+    def perform_create(self, serializer):
+        super(InboundViewSet, self).perform_create(serializer)
+        logger.info("An inbounds created")
+        Inbound.create_config_json()
+        if platform.system() == "Linux":
+            Inbound.restart_xray()
+
+    # def update(self, request, *args, **kwargs):
+    #     try:
+    #         partial = kwargs.pop('partial', False)
+    #         instance = self.get_object()
+    #         serializer = self.get_serializer(instance, data=request.data, partial=partial)
+    #         print(serializer)
+    #         serializer.is_valid(raise_exception=True)
+    #         self.perform_update(serializer)
+    #
+    #         if getattr(instance, '_prefetched_objects_cache', None):
+    #             # If 'prefetch_related' has been applied to a queryset, we need to
+    #             # forcibly invalidate the prefetch cache on the instance.
+    #             instance._prefetched_objects_cache = {}
+    #
+    #         return Response(serializer.data)
+    #     except Exception as e:
+    #         print(e)
+
+    # def create(self, request, *args, **kwargs):
+    #     try:
+    #         serializer = InboundSerializer(data=request.data)
+    #         print(serializer)
+    #         serializer.is_valid(raise_exception=True)
+    #         print("1111111111111111111111111111111111111111")
+    #         author = request.user
+    #         print(author)
+    #     except Exception as e:
+    #         print(e)
+
+
+class InboundStatusView(viewsets.ModelViewSet):
+    http_method_names = ["patch"]
+    serializer_class = InboundStatusSerializer
+    queryset = Inbound.objects.all()
+    permission_classes = (IsAuthenticated,)
+    pagination_class = InboundPagination
+
+    def perform_update(self, serializer):
+        super(InboundStatusView, self).perform_update(serializer)
+        logger.info("Inbounds status updated")
+        Inbound.create_config_json()
+        if platform.system() == "Linux":
+            Inbound.restart_xray()
+
+
+class CertificateView(viewsets.ModelViewSet):
+    serializer_class = CertificateSerializer
+    queryset = Certificate.objects.all()
+    permission_classes = (IsAuthenticated,)
+
+
+class UserTokenObtainPairView(TokenObtainPairView):
+    serializer_class = UserTokenObtainPairSerializer
+
+    def post(self, request, *args, **kwargs):
+        captcha = Captcha.objects.first()
+        if captcha and captcha.enable:
+            recaptchaToken = request.data.get("recaptchaToken")
+            captcha_result = check_captcha.verify_captcha(captcha.secret_key,recaptchaToken)
+        else:
+            captcha_result = True
+        if captcha_result:
+            serializer = self.get_serializer(data=request.data)
+            try:
+                serializer.is_valid(raise_exception=True)
+                return Response(serializer.validated_data, status=status.HTTP_200_OK)
+            except Exception as e:
+                logger.error(e)
+            return Response({}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+class UserViewSet(viewsets.ModelViewSet):
+    http_method_names = ["post"]
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
+    permission_classes = (IsAuthenticated,)
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('username',)
+
+    def create(self, request, *args, **kwargs):
+        data = request.data
+        user = request.user
+        serializer = self.serializer_class(data=data)
+        if serializer.is_valid():
+            old_password = serializer.validated_data.get('password')
+            password1 = data.get("password1")
+            password2 = data.get("password2")
+            if not (password1 and password2 and password1 == password2 and user.check_password(old_password)):
+                return Response({}, status=status.HTTP_400_BAD_REQUEST)
+            user.set_password(password1)
+            user.save()
+            return Response({'message': 'OK'}, status=status.HTTP_200_OK)
+        else:
+            logger.error(serializer.errors)
+        return Response({}, status=status.HTTP_400_BAD_REQUEST)
