@@ -68,7 +68,7 @@
         <v-col class="text-start">
           <v-icon>mdi-information</v-icon>
 
-          <a>{{ $t('message.nginx_port', {http_port: default_port}) }}</a>
+          <a>{{ $t('message.nginx_port') }}</a>
         </v-col>
         <p v-if="showError" id="error">{{ error_message }}</p>
       </v-col>
@@ -104,7 +104,6 @@ export default {
         extra_config: '',
         enable: false,
       },
-      default_port: process.env.VUE_APP_NGINX_PORT,
       snackbar: false,
       text: '',
       rules: {
@@ -136,8 +135,6 @@ export default {
           this.snackbar = true
           if (this.nginx.enable){
             window.location.href = "https://" + this.nginx.domain + ":" + this.nginx.port
-          }else{
-            window.location.href = "http://" + this.nginx.domain + ":" + process.env.VUE_APP_NGINX_PORT
           }
           break
         case 400:
