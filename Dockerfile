@@ -55,4 +55,4 @@ RUN apt remove -y \
     apt autoremove -y
 
 HEALTHCHECK --interval=30s --timeout=3s CMD  ./healthcheck.sh
-CMD ["/run.sh"]
+CMD ["/bin/bash", "/run.sh"]
