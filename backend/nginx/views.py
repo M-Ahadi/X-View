@@ -1,4 +1,4 @@
-from django.shortcuts import render
+import platform
 
 # Create your views here.
 from rest_framework import viewsets, status
@@ -23,10 +23,12 @@ class NginxView(viewsets.ModelViewSet):
             nginx.certificate_id = serializer.validated_data.get("certificate")
             nginx.domain = serializer.validated_data.get("domain")
             nginx.enable = serializer.validated_data.get("enable")
+            nginx.port = serializer.validated_data.get("port")
             nginx.save()
         else:
             self.perform_create(serializer)
-        Nginx.create_nginx_config()
-        Nginx.restart_nginx()
+        if platform.system() == "Linux":
+            Nginx.create_nginx_config()
+            Nginx.restart_nginx()
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
