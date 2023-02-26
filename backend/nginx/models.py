@@ -24,11 +24,11 @@ class Nginx(models.Model):
     def create_nginx_config():
         data = Nginx.objects.first()
         nginx_port = os.getenv("NGINX_PORT", 443)
-        if data.enable and data.domain:
+        if data and data.enable and data.domain:
             server_name = data.domain
         else:
             server_name = "_"
-        if data.enable and data.certificate:
+        if data and data.enable and data.certificate:
             with open("/etc/nginx/conf.d/server.conf", "w") as f:
                 f.write(f"""
                 listen      {nginx_port} ssl http2 default_server;
