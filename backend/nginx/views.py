@@ -26,6 +26,7 @@ class NginxView(viewsets.ModelViewSet):
             nginx.save()
         else:
             self.perform_create(serializer)
+        Nginx.create_nginx_config()
         Nginx.restart_nginx()
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
