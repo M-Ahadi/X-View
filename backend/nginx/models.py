@@ -43,6 +43,7 @@ class Nginx(models.Model):
                     f.write(f"listen      {os.getenv('NGINX_PORT')} default_server;\n")
                 f.write(f"""
                 listen      {data.port} ssl http2 default_server;
+                server_name {server_name};
                 ssl_certificate /etc/nginx/conf.d/certificate.pem;
                 ssl_certificate_key /etc/nginx/conf.d/privatekey.pem;
                 {data.extra_config}
