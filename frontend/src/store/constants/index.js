@@ -37,6 +37,8 @@ export const SETTINGS = {
     LOAD_TELEGRAM: "load_telegram",
     LOAD_CAPTCHA: "load_captcha",
     LOAD_SITE_KEY: "load_site_key",
+    LOAD_NGINX: "load_nginx",
+    UPDATE_NGINX: "update_nginx",
     ERROR: "error"
 }
 

@@ -21,6 +21,7 @@
             <v-tab value="password">{{ $t("message.password") }}</v-tab>
             <v-tab value="telegram">{{ $t("message.telegram_bot") }}</v-tab>
             <v-tab value="captcha">{{ $t("message.captcha") }}</v-tab>
+            <v-tab value="nginx">{{ $t("message.nginx") }}</v-tab>
           </v-tabs>
           <v-window v-model="tab">
             <v-window-item
@@ -38,7 +39,12 @@
             >
               <CaptchaPage/>
             </v-window-item>
-            
+
+            <v-window-item
+                value="nginx"
+            >
+              <NginxPage/>
+            </v-window-item>
           </v-window>
         </v-card>
       </v-col>
@@ -51,10 +57,12 @@
 import TelegramPage from "@/components/TelegramPage";
 import CaptchaPage from "@/components/CaptchaPage";
 import PasswordPage from "@/components/PasswordPage";
+import NginxPage from "@/components/NginxPage";
 
 export default {
   name: "PanelSettingsView",
   components: {
+    NginxPage,
     PasswordPage,
     TelegramPage,
     CaptchaPage
