@@ -135,11 +135,10 @@ export default {
           this.text = this.$t('message.nginx_saved')
           this.snackbar = true
           if (this.nginx.enable){
-            window.location.href = "https://" + this.nginx.domain + ":" + this.nginx.domain
+            window.location.href = "https://" + this.nginx.domain + ":" + this.nginx.port
           }else{
             window.location.href = "http://" + this.nginx.domain + ":" + process.env.VUE_APP_NGINX_PORT
           }
-
           break
         case 400:
           this.showError = true
