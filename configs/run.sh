@@ -10,4 +10,4 @@ export SECRET_KEY=$(python3 -c 'from django.core.management.utils import get_ran
 export VUE_APP_NGINX_PORT=$NGINX_PORT
 
 
-exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
+exec /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
