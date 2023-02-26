@@ -118,11 +118,11 @@ export default {
       Setting.append("domain", this.nginx.domain);
       Setting.append("extra_config", this.nginx.extra_config);
       await this.UpdateNginx(Setting)
+      const port = process.env.VUE_APP_NGINX_PORT || "4444"
       switch (this.getStatus) {
         case 201:
           this.text = this.$t('message.nginx_saved')
           this.snackbar = true
-          let port = process.env.VUE_APP_NGINX_PORT || "4444"
           if (this.nginx.enable){
             window.location.href = "https://" + this.nginx.domain + ":" + port
           }else{
