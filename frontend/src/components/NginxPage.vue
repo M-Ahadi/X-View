@@ -122,6 +122,13 @@ export default {
         case 201:
           this.text = this.$t('message.nginx_saved')
           this.snackbar = true
+          let port = process.env.VUE_APP_NGINX_PORT || "4444"
+          if (this.nginx.enable){
+            window.location.href = "https://" + this.nginx.domain + ":" + port
+          }else{
+            window.location.href = "http://" + this.nginx.domain + ":" + port
+          }
+
           break
         case 400:
           this.showError = true

@@ -1,9 +1,13 @@
+import logging
 import os
+import subprocess
 
 from django.db import models
 
 # Create your models here.
 from xview.models import Certificate
+
+logger = logging.getLogger(__name__)
 
 
 class Nginx(models.Model):
@@ -19,6 +23,11 @@ class Nginx(models.Model):
 
     class Meta:
         ordering = ["id"]
+
+    @staticmethod
+    def restart_nginx():
+        logger.info("restart xray service")
+        subprocess.Popen("/usr/bin/supervisorctl restart nginx", shell=True)
 
     @staticmethod
     def create_nginx_config():
@@ -37,12 +46,13 @@ class Nginx(models.Model):
                 {data.extra_config}
                 """)
             with open("/etc/nginx/conf.d/certificate.pem", "w") as f:
-                f.write(data.certificate.certificate)
+                f.write(data.certificate.certificate.replace(",","\n"))
             with open("/etc/nginx/conf.d/privatekey.pem", "w") as f:
-                f.write(data.certificate.privatekey)
+                f.write(data.certificate.privatekey.replace(",","\n"))
         else:
             with open("/etc/nginx/conf.d/server.conf", "w") as f:
                 f.write(f"""
                 listen      {nginx_port} default_server;
                 server_name {server_name};
                 """)
+
