@@ -12,6 +12,7 @@ logger = logging.getLogger(__name__)
 
 class Nginx(models.Model):
     domain = models.CharField(max_length=15)
+    port = models.IntegerField(default=443)
     enable = models.BooleanField(default=False)
     certificate = models.ForeignKey(Certificate, on_delete=models.CASCADE, related_name='nginx')
     extra_config = models.CharField(max_length=500, default="""
@@ -32,15 +33,16 @@ class Nginx(models.Model):
     @staticmethod
     def create_nginx_config():
         data = Nginx.objects.first()
-        nginx_port = os.getenv("NGINX_PORT", 443)
         if data and data.enable and data.domain:
             server_name = data.domain
         else:
             server_name = "_"
         if data and data.enable and data.certificate:
             with open("/etc/nginx/conf.d/server.conf", "w") as f:
+                if int(data.port) != int(os.getenv('NGINX_PORT')):
+                    f.write(f"listen      {os.getenv('NGINX_PORT')} default_server;\n")
                 f.write(f"""
-                listen      {nginx_port} ssl http2 default_server;
+                listen      {data.port} ssl http2 default_server;
                 ssl_certificate /etc/nginx/conf.d/certificate.pem;
                 ssl_certificate_key /etc/nginx/conf.d/privatekey.pem;
                 {data.extra_config}
@@ -52,7 +54,7 @@ class Nginx(models.Model):
         else:
             with open("/etc/nginx/conf.d/server.conf", "w") as f:
                 f.write(f"""
-                listen      {nginx_port} default_server;
+                listen      {os.getenv('NGINX_PORT')} default_server;
                 server_name {server_name};
                 """)
 

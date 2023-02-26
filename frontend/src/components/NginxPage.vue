@@ -39,14 +39,18 @@
 
           <v-text-field
               v-model="nginx.domain"
-
               :label='$t("message.domain_name")'
+              solo
+              :rules="[rules.required]"
+          />
+          <v-text-field
+              v-model="nginx.port"
+              :label='$t("message.port")'
               solo
               :rules="[rules.required]"
           />
           <v-textarea
               v-model="nginx.extra_config"
-
               :label='$t("message.extra_config")'
               solo
               :rules="[rules.required]"
@@ -61,6 +65,11 @@
           >{{ $t("message.save") }}
           </v-btn>
         </v-form>
+        <v-col class="text-start">
+          <v-icon>mdi-information</v-icon>
+
+          <a>{{ $t('message.nginx_port', {http_port: default_port}) }}</a>
+        </v-col>
         <p v-if="showError" id="error">{{ error_message }}</p>
       </v-col>
     </v-row>
@@ -91,9 +100,11 @@ export default {
       nginx: {
         certificate: '',
         domain: '',
+        port: '',
         extra_config: '',
         enable: false,
       },
+      default_port: process.env.VUE_APP_NGINX_PORT,
       snackbar: false,
       text: '',
       rules: {
@@ -116,17 +127,17 @@ export default {
       Setting.append("enable", this.nginx.enable || false);
       Setting.append("certificate", this.nginx.certificate);
       Setting.append("domain", this.nginx.domain);
+      Setting.append("port", this.nginx.port);
       Setting.append("extra_config", this.nginx.extra_config);
       await this.UpdateNginx(Setting)
-      const port = process.env.VUE_APP_NGINX_PORT || "4444"
       switch (this.getStatus) {
         case 201:
           this.text = this.$t('message.nginx_saved')
           this.snackbar = true
           if (this.nginx.enable){
-            window.location.href = "https://" + this.nginx.domain + ":" + port
+            window.location.href = "https://" + this.nginx.domain + ":" + this.nginx.domain
           }else{
-            window.location.href = "http://" + this.nginx.domain + ":" + port
+            window.location.href = "http://" + this.nginx.domain + ":" + process.env.VUE_APP_NGINX_PORT
           }
 
           break
