@@ -272,6 +272,7 @@ export default {
         this.name = null
         this.certificate = null
         this.privatekey = null
+        this.certificate_id = null
       }
       this.certificate_form_dialog = true
     },

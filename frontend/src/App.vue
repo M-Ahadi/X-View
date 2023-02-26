@@ -46,26 +46,6 @@
                     :title="$t('message.panel_settings')"
                     prepend-icon="mdi-cog-outline"
                 ></v-list-item>
-<!--                <v-list-group value="panel_settings">-->
-<!--                  <v-list-item-->
-<!--                      link-->
-<!--                      :to="{name: 'system_settings'}"-->
-<!--                      :title="$t('message.password')"-->
-<!--                      active-color="primary"-->
-<!--                      rounded="xl"-->
-<!--                      prepend-icon="mdi-onepassword"-->
-<!--                  />-->
-
-<!--                </v-list-group>-->
-<!--                <v-list-item-->
-<!--                    link-->
-<!--                    :to="{name: 'system_settings'}"-->
-<!--                    :title="$t('message.panel_settings')"-->
-<!--                    density="compact"-->
-<!--                    prepend-icon="mdi-cog-outline"-->
-<!--                    active-color="primary"-->
-<!--                    rounded="xl"-->
-<!--                />-->
                 <v-list-item
                     link
                     href="https://github.com/M-Ahadi/X-View"

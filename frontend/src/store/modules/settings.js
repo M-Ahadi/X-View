@@ -7,13 +7,14 @@ import router from "@/router";
 const state = () => ({
     status: null,
     captcha: {},
-    telegram: {}
+    telegram: {},
+    nginx: {}
 })
 
 const getters = {
     getStatus: state => state.status,
-    getCaptcha: state => state.captcha,
     getTelegram: state => state.telegram,
+    getNginx: state => state.nginx,
     getSiteKey: state => state.captcha.site_key,
 }
 
@@ -86,6 +87,37 @@ const actions = {
 
     },
 
+    [SETTINGS.LOAD_NGINX]: async ({commit}) => {
+        let header = {}
+        const token = await getToken()
+        if (token) {
+            header['Authorization'] = 'Bearer ' + token
+        }
+        await HTTP.get('nginx/', {headers: header})
+            .then((result) => {
+                commit(SETTINGS.LOAD_NGINX, result)
+            }).catch((error) => {
+                commit(SETTINGS.ERROR,error)
+                console.error("error", error)
+            })
+
+    },
+    [SETTINGS.UPDATE_NGINX]: async ({commit}, payload) => {
+        let header = {}
+        const token = await getToken()
+        if (token) {
+            header['Authorization'] = 'Bearer ' + token
+        }
+        await HTTP.post('nginx/', payload, {headers: header})
+            .then((result) => {
+                commit(SETTINGS.UPDATE_NGINX, result)
+            }).catch((error) => {
+                commit(SETTINGS.ERROR,error)
+                console.error("error", error)
+            })
+
+    },
+
 }
 
 
@@ -104,24 +136,39 @@ const mutations = {
         }
         state.status = result.status
     },
-    [SETTINGS.LOAD_SITE_KEY]: (state, result) => {
-        if (result.data.length > 0){
-            state.captcha['site_key'] = result.data[0].site_key
+    [SETTINGS.LOAD_SITE_KEY]: (state, payload) => {
+        if (payload.data.length > 0){
+            state.captcha['site_key'] = payload.data[0].site_key
         }
-        state.status = result.status
+        state.status = payload.status
     },
-    [SETTINGS.UPDATE_TELEGRAM]: (state, result) => {
-        state.status = result.status
+    [SETTINGS.UPDATE_TELEGRAM]: (state, payload) => {
+        state.status = payload.status
     },
-    [SETTINGS.LOAD_TELEGRAM]: (state, result) => {
+    [SETTINGS.LOAD_TELEGRAM]: (state, payload) => {
         state.telegram = {}
-        if(result.data.length > 0){
-            state.telegram = result.data[0]
+        if(payload.data.length > 0){
+            state.telegram = payload.data[0]
         }
-        state.status = result.status
+        state.status = payload.status
+    },
+    [SETTINGS.UPDATE_NGINX]: (state, payload) => {
+        state.status = payload.status
+    },
+    [SETTINGS.LOAD_NGINX]: (state, payload) => {
+        state.nginx = {}
+        if(payload.data.length > 0){
+            state.nginx = payload.data[0]
+        }
+        state.status = payload.status
     },
     [SETTINGS.ERROR]: (state, payload) => {
-        if (payload.response.status === 401){
+        console.log(payload)
+        if (payload.code === "ERR_NETWORK"){
+            state.status = 500
+            return
+        }
+        if (payload.response && payload.response.status === 401){
             router.push({name: 'logout'});
         }
         state.status = payload.response.status

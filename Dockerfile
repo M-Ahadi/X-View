@@ -21,6 +21,7 @@ RUN apt update &&\
 COPY --from=build-stage /app/dist /var/www/html
 
 COPY configs/nginx.conf /etc/nginx/nginx.conf
+COPY configs/backend.conf /etc/nginx/conf.d/backend.conf
 
 RUN curl -L https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-64.zip -o /tmp/Xray-linux-64.zip  &&\
     unzip /tmp/Xray-linux-64.zip -d /tmp/xray &&\
@@ -45,7 +46,6 @@ RUN pip install -r requirements.txt
 
 COPY /backend/ ./
 RUN chmod +x /x-view/healthcheck.sh
-#COPY configs/config.json /backend/
 
 ENV NGINX_PORT 4444
 VOLUME /x-view/db
@@ -55,4 +55,4 @@ RUN apt remove -y \
     apt autoremove -y
 
 HEALTHCHECK --interval=30s --timeout=3s CMD  ./healthcheck.sh
-CMD ["/run.sh"]
+CMD ["/bin/bash", "/run.sh"]

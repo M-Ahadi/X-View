@@ -100,7 +100,11 @@
     "secret_key": "Secret Key",
     "password_saved": "Password saved successfully.",
     "telegram_saved": "Telegram configured successfully.",
+    "nginx_saved": "Nginx configured successfully.",
     "captcha_saved": "Captcha configured successfully.",
-    "get_captcha": "Get Google Captcha v2 keys"
+    "get_captcha": "Get Google Captcha v2 keys",
+    "nginx": "Nginx",
+    "extra_config": "Extra Config",
+    "nginx_port": "If you configure different port than default port, x-view will listen on both ports, but if you configure same port, it will be overwrite to https."
   }
 }

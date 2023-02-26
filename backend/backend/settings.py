@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'xview',
     'telegram',
     'captcha',
+    'nginx',
 
     'health_check',  # required
     'health_check.db',  # stock Django health checkers
