@@ -118,10 +118,11 @@ export default {
           this.error_message = this.$t('message.error_change_password')
           break
       }
+      this.loading = false
     }
   },
   computed: {
-    ...mapGetters('settings',
+    ...mapGetters('auth',
         {
           getStatus: 'getStatus'
         }

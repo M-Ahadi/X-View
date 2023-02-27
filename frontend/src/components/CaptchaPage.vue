@@ -68,7 +68,7 @@
 </template>
 
 <script>
-import {mapActions} from "vuex";
+import {mapActions, mapGetters} from "vuex";
 import {SETTINGS} from "@/store/constants";
 import SnackbarAlert from "@/components/SnackbarAlert";
 
@@ -122,7 +122,15 @@ export default {
           this.error_message = this.$t('message.error_change')
           break
       }
+      this.loading = false
     }
+  },
+  computed: {
+    ...mapGetters('settings',
+        {
+          getStatus: 'getStatus'
+        }
+    ),
   }
 }
 </script>
