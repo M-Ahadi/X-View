@@ -83,7 +83,7 @@
     "certificate_error": "There was an error in configuring certificates. Please try again.",
     "required": "This field is required.",
     "bad_certificate": "Bad certificate",
-    "bad_privatekey": "Bad privatekey",
+    "bad_privatekey": "Bad private key",
     "password_mismatch": "Password Mismatch!",
     "error_change_password": "There was an error in configuring password. Please try again",
     "old_password": "Old Password",

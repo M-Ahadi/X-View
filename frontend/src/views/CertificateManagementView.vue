@@ -82,25 +82,25 @@
               v-model="valid"
           >
             <v-text-field
+                v-model="certificate_data.name"
                 :label='$t("message.certificate_name")'
-                :rules="[rules.required]"
-                v-model="name"
                 solo
+                :rules="[rules.required]"
             ></v-text-field>
             <v-textarea
+                v-model="certificate_data.certificate"
                 :label='$t("message.certificate")'
-                v-model="certificate"
                 :rules="[rules.required, rules.isCertificate]"
             ></v-textarea>
             <v-textarea
+                v-model="certificate_data.privatekey"
                 :label='$t("message.privatekey")'
-                v-model="privatekey"
                 :rules="[rules.required, rules.isPrivatekey]"
             ></v-textarea>
             <v-row>
               <v-col>
                 <v-btn
-                    v-if="! this.certificate_id"
+                    v-if="! certificate_data.id"
                     type="submit"
                     block
                     color="secondary"
@@ -110,13 +110,13 @@
                 >{{ $t("message.add") }}
                 </v-btn>
                 <v-btn
-                    v-if="this.certificate_id"
+                    v-if="!!certificate_data.id"
                     type="submit"
                     block
                     color="secondary"
                     :loading="loading"
                     elevation="3"
-                    :disabled="!valid"
+                    :disabled="valid === false"
                 >{{ $t("message.update") }}
                 </v-btn>
               </v-col>
@@ -192,19 +192,21 @@ export default {
     from: null,
     valid: false,
     loading: false,
-    name: '',
-    certificate: '',
-    privatekey: '',
+    certificate_data: {
+      name: '',
+      certificate: '',
+      privatekey: '',
+      id: null
+    },
     showError: false,
-    certificate_id: null,
     error_message: '',
     certificate_form_dialog: false,
     delete_certificate_dialog: false,
     certificates: [],
     rules: {
       required: value => !!value || this.$t('message.required'),
-      isCertificate: value => value.trim().startsWith("-----BEGIN CERTIFICATE-----") && value.trim().endsWith("-----END CERTIFICATE-----") || this.$t('message.bad_certificate'),
-      isPrivatekey: value => value.trim().startsWith("-----BEGIN PRIVATE KEY-----") && value.trim().endsWith("-----END PRIVATE KEY-----") || this.$t('message.bad_privatekey')
+      isCertificate: value => (value.trim().startsWith("-----BEGIN CERTIFICATE-----") && value.trim().endsWith("-----END CERTIFICATE-----")) || this.$t('message.bad_certificate'),
+      isPrivatekey: value => (value.trim().startsWith("-----BEGIN PRIVATE KEY-----") && value.trim().endsWith("-----END PRIVATE KEY-----")) || this.$t('message.bad_privatekey')
       }
   }
   },
@@ -218,14 +220,13 @@ export default {
     async submit() {
       this.loading = true
       const Certificate = new FormData();
-      Certificate.append("name", this.name.trim());
-      Certificate.append("certificate", this.certificate.replaceAll("\r",'').replaceAll("\n",",").trim());
-      Certificate.append("privatekey", this.privatekey.replaceAll("\r",'').replaceAll("\n",",").trim());
-      if (this.certificate_id) {
-        await this.updateCertificate({id:this.certificate_id,data: Certificate})
-        const response = this.getStatus
-        switch (response) {
-          case 201: {
+      Certificate.append("name", this.certificate_data.name.trim());
+      Certificate.append("certificate", this.certificate_data.certificate.replaceAll("\r",'').replaceAll("\n",",").trim());
+      Certificate.append("privatekey", this.certificate_data.privatekey.replaceAll("\r",'').replaceAll("\n",",").trim());
+      if (this.certificate_data && this.certificate_data.id) {
+        await this.updateCertificate({id:this.certificate_data.id,data: Certificate})
+        switch (this.getStatus) {
+          case 200: {
             this.showError = false
             this.loading = false
             this.$router.go({name: 'certificates'});
@@ -240,8 +241,7 @@ export default {
         }
       }else {
         await this.addCertificate(Certificate)
-        const response = this.getStatus
-        switch (response) {
+        switch (this.getStatus) {
           case 201: {
             this.showError = false
             this.loading = false
@@ -261,27 +261,21 @@ export default {
       if (certificate_id){
         for (let i=0; i< this.certificates.length; i++){
           if (this.certificates[i].id === certificate_id){
-            this.name = this.certificates[i].name
-            this.certificate = this.certificates[i].certificate.replaceAll(",","\n")
-            this.privatekey = this.certificates[i].privatekey.replaceAll(",","\n")
-            this.certificate_id = certificate_id
+            this.certificate_data = JSON.parse(JSON.stringify(this.certificates[i]));
           }
         }
       }
       else{
-        this.name = null
-        this.certificate = null
-        this.privatekey = null
-        this.certificate_id = null
+        this.certificate_data = {}
       }
       this.certificate_form_dialog = true
     },
     async delete_certificate() {
-      await this.deleteCertificate(this.certificate_id)
+      await this.deleteCertificate(this.certificate_data.id)
       this.$router.go({name: "certificates"})
     },
     ask_delete_certificate(certificate_id) {
-      this.certificate_id = certificate_id
+      this.certificate_data.id = certificate_id
       this.delete_certificate_dialog = true
     }
 
@@ -295,15 +289,12 @@ export default {
   },
   async mounted() {
     await this.listCertificate()
-    this.certificates = this.getCertificates
-  },
-  beforeRouteEnter(to, from, next)
-  {
-    next((vm) => {
-      vm.from = from.name;
-    });
-}
-,
+    this.certificates = JSON.parse(JSON.stringify(this.getCertificates))
+    for(let i=0; i < this.certificates.length; i++){
+      this.certificates[i].certificate = this.certificates[i].certificate.replaceAll(",","\n")
+      this.certificates[i].privatekey = this.certificates[i].privatekey.replaceAll(",","\n")
+    }
+  }
 
 }
 </script>
