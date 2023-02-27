@@ -109,9 +109,6 @@ class UserViewSet(viewsets.ModelViewSet):
             old_password = serializer.validated_data.get('password')
             password1 = data.get("password1")
             password2 = data.get("password2")
-            print(password1)
-            print(password2)
-            print(user.check_password(old_password))
             if not (password1 and password2 and password1 == password2 and user.check_password(old_password)):
                 return Response({}, status=status.HTTP_400_BAD_REQUEST)
             user.set_password(password1)
