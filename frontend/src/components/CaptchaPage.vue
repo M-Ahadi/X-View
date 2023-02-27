@@ -128,10 +128,15 @@ export default {
   computed: {
     ...mapGetters('settings',
         {
+          getCaptcha: 'getCaptcha',
           getStatus: 'getStatus'
         }
     ),
-  }
+  },
+  async mounted() {
+    await this.LoadCaptcha()
+    this.captcha = JSON.parse(JSON.stringify(this.getCaptcha))
+  },
 }
 </script>
 
