@@ -21,6 +21,7 @@ RUN apt update &&\
 COPY --from=build-stage /app/dist /var/www/html
 
 COPY configs/nginx.conf /etc/nginx/nginx.conf
+COPY configs/routes.conf /etc/nginx/routes/routes.conf
 COPY configs/backend.conf /etc/nginx/conf.d/backend.conf
 
 RUN curl -L https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-64.zip -o /tmp/Xray-linux-64.zip  &&\
