@@ -30,34 +30,35 @@ Currently, this project is in alpha state.
 - [x] Add certificate to nginx
 - [X] Support Dark and Light Them
 
-![Menu](images/documentation/menu.jpg)
+
+![Menu](images/documentation/menu.jpg) \
 Easy to use menu to access different sections, change them, and language
 
-![Login Page](images/documentation/login.jpg)
+![Login Page](images/documentation/login.jpg) \
 Login page supports google captcha v2
 
-![Inbound List](images/documentation/inbounds.jpg)
+![Inbound List](images/documentation/inbounds.jpg) \
 Manage all inbounds
 
-![New Inbound](images/documentation/new_inbound.jpg)
+![New Inbound](images/documentation/new_inbound.jpg) \
 Create new inbound using a user-friendly interface
 
-![Protocols](images/documentation/protocols.jpg)
+![Protocols](images/documentation/protocols.jpg) \
 Supports many protocols
 
-![Certificate Manage](images/documentation/certificate_manager.jpg)
+![Certificate Manage](images/documentation/certificate_manager.jpg) \
 Manage all your certificates easily
 
-![Password Manage](images/documentation/setting_password.jpg)
+![Password Manage](images/documentation/setting_password.jpg) \
 Change default password
 
-![Telegram Manager](images/documentation/setting_telegram.jpg)
+![Telegram Manager](images/documentation/setting_telegram.jpg) \
 Configure telegram bot for receiving alert
 
-![Captcha Manager](images/documentation/setting_captcha.jpg)
+![Captcha Manager](images/documentation/setting_captcha.jpg) \
 Enable login page captcha for more security
 
-![Nginx Manager](images/documentation/setting_nginx.jpg)
+![Nginx Manager](images/documentation/setting_nginx.jpg) \
 Configure nginx inside the docker, to put the inbounds behind the nginx, and load X-View secure.
 
 
