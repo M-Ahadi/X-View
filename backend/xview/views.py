@@ -50,35 +50,6 @@ class InboundViewSet(viewsets.ModelViewSet):
         if platform.system() == "Linux":
             Inbound.restart_xray()
 
-    # def update(self, request, *args, **kwargs):
-    #     try:
-    #         partial = kwargs.pop('partial', False)
-    #         instance = self.get_object()
-    #         serializer = self.get_serializer(instance, data=request.data, partial=partial)
-    #         print(serializer)
-    #         serializer.is_valid(raise_exception=True)
-    #         self.perform_update(serializer)
-    #
-    #         if getattr(instance, '_prefetched_objects_cache', None):
-    #             # If 'prefetch_related' has been applied to a queryset, we need to
-    #             # forcibly invalidate the prefetch cache on the instance.
-    #             instance._prefetched_objects_cache = {}
-    #
-    #         return Response(serializer.data)
-    #     except Exception as e:
-    #         print(e)
-
-    # def create(self, request, *args, **kwargs):
-    #     try:
-    #         serializer = InboundSerializer(data=request.data)
-    #         print(serializer)
-    #         serializer.is_valid(raise_exception=True)
-    #         print("1111111111111111111111111111111111111111")
-    #         author = request.user
-    #         print(author)
-    #     except Exception as e:
-    #         print(e)
-
 
 class InboundStatusView(viewsets.ModelViewSet):
     http_method_names = ["patch"]
@@ -138,6 +109,9 @@ class UserViewSet(viewsets.ModelViewSet):
             old_password = serializer.validated_data.get('password')
             password1 = data.get("password1")
             password2 = data.get("password2")
+            print(password1)
+            print(password2)
+            print(user.check_password(old_password))
             if not (password1 and password2 and password1 == password2 and user.check_password(old_password)):
                 return Response({}, status=status.HTTP_400_BAD_REQUEST)
             user.set_password(password1)
