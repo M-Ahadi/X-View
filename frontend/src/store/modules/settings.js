@@ -14,6 +14,7 @@ const state = () => ({
 const getters = {
     getStatus: state => state.status,
     getTelegram: state => state.telegram,
+    getCaptcha: state => state.captcha,
     getNginx: state => state.nginx,
     getSiteKey: state => state.captcha.site_key,
 }

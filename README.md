@@ -8,12 +8,10 @@ Currently, this project is in alpha state.
 - [ ] Test all configuration for all protocols
 - [ ] Add option to put vpn behind nginx
 - [ ] Add option to put vpn behind cloud
-- [ ] Add certificate to nginx
 - [ ] Support multi-user
 - [ ] Add data traffic monitoring
 - [ ] Complete admin panel monitoring
 - [ ] Traffic statistics, limit traffic, limit expiration time
-- [ ] Support https access panel (self-provided domain name + ssl certificate)
 - [ ] Add telegram alert
 - [ ] Add reality security
 
@@ -28,6 +26,8 @@ Currently, this project is in alpha state.
 - [x] Multilingual
   - Persian
   - English
+- [x] Support https access panel (self-provided domain name + ssl certificate)
+- [x] Add certificate to nginx
 
 # Install
 ```shell
