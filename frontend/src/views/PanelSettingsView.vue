@@ -54,10 +54,10 @@
 </template>
 
 <script>
-import TelegramPage from "@/components/TelegramPage";
-import CaptchaPage from "@/components/CaptchaPage";
-import PasswordPage from "@/components/PasswordPage";
-import NginxPage from "@/components/NginxPage";
+import TelegramPage from "@/components/settings/TelegramPage";
+import CaptchaPage from "@/components/settings/CaptchaPage";
+import PasswordPage from "@/components/settings/PasswordPage";
+import NginxPage from "@/components/settings/NginxPage";
 
 export default {
   name: "PanelSettingsView",

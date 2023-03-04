@@ -81,7 +81,6 @@ const actions = {
         if (token) {
             header['Authorization'] = 'Bearer ' + token
         }
-        console.log("Updating an inbound status")
         await HTTP.patch('status/' + payload.id + '/', payload.data, {headers: header})
             .then((result) => {
                 commit(INBOUND.UPDATE_STATUS, result.status)

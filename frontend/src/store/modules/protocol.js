@@ -1,18 +1,99 @@
 import {GeneratePassword, RandomPort, uuidv4} from "@/store/utils";
-import {ENCRYPTIONS, NETWORKS, PROTOCOLS, SHADOWSOCKS_ENRYPTIONS, TRANSMISSIONS,} from "@/store/constants";
+import {ENCRYPTIONS, NETWORKS, SHADOWSOCKS_ENRYPTIONS, TRANSMISSIONS,} from "@/store/constants";
 
 
 let config_data = {}
+export const GetVlessDefaultConfig = function (){
+    return {
+        update : false,
+        id: '',
+        password : GeneratePassword(),
+        port : RandomPort(),
+        uid : uuidv4(),
+        transmission : TRANSMISSIONS[0],
+        network : NETWORKS[0],
+        request_headers : [],
+        tls : false,
+        xtls : false,
+        acceptProxyProtocol : false,
+        http_masquerade : false,
+        sniffing : true,
+        name : '',
+        bindip : '0.0.0.0',
+        disableInsecureEncryption : false,
+        domain_name : '',
+        alpn : '',
+        masquerade : '',
+        mtu : 1350,
+        tti : 20,
+        uplink_capacity : 5,
+        downlink_capacity : 20,
+        congestion : false,
+        read_buffer_size : 2,
+        write_buffer_size : 2,
+        path : '/',
+        host : '',
+        encryption : ENCRYPTIONS[0],
+        service_name : '',
+        request_version: "1.1",
+        request_method: "GET",
+        request_path: "/",
+        response_version: "1.1",
+        response_status: 200,
+        response_status_description: "OK"
 
-export const  GetDefaultConfig = function () {
+    }
+}
+
+export const GetVmessDefaultConfig = function (){
+    return {
+        update : false,
+        id: '',
+        password : GeneratePassword(),
+        port : RandomPort(),
+        uid : uuidv4(),
+        transmission : TRANSMISSIONS[0],
+        network : NETWORKS[0],
+        request_headers : [],
+        tls : false,
+        xtls : false,
+        acceptProxyProtocol : false,
+        http_masquerade : false,
+        sniffing : true,
+        name : '',
+        bindip : '0.0.0.0',
+        disableInsecureEncryption : false,
+        domain_name : '',
+        alpn : '',
+        masquerade : '',
+        mtu : 1350,
+        tti : 20,
+        uplink_capacity : 5,
+        downlink_capacity : 20,
+        congestion : false,
+        read_buffer_size : 2,
+        write_buffer_size : 2,
+        path : '/',
+        host : '',
+        encryption : ENCRYPTIONS[0],
+        service_name : '',
+        request_version: "1.1",
+        request_method: "GET",
+        request_path: "/",
+        response_version: "1.1",
+        response_status: 200,
+        response_status_description: "OK"
+
+    }
+}
+
+export const  GetShadowsocksDefaultConfig = function () {
     return {
         update : false,
         id: null,
         password : GeneratePassword(),
         shadowsocks_password : GeneratePassword(),
         port : RandomPort(),
-        uid : uuidv4(),
-        protocol : PROTOCOLS[0],
         transmission : TRANSMISSIONS[0],
         network : NETWORKS[0],
         request_headers : [],
@@ -45,9 +126,73 @@ export const  GetDefaultConfig = function () {
         response_version: "1.1",
         response_status: 200,
         response_status_description: "OK"
+    }
+}
+
+export const  GetTrojanDefaultConfig = function () {
+    return {
+        update : false,
+        id: null,
+        password : GeneratePassword(),
+        port : RandomPort(),
+        request_headers : [],
+        tls : false,
+        xtls : false,
+        sniffing : true,
+        name : '',
+        bindip : '0.0.0.0',
+        domain_name : '',
+        alpn : '',
+        path : '/',
+        host : '',
 
     }
 }
+
+export const  GetDokodemoDefaultConfig = function () {
+    return {
+        update : false,
+        id: null,
+        port : RandomPort(),
+        network : NETWORKS[0],
+        name : '',
+        bindip : '0.0.0.0',
+        path : '/',
+        host : '',
+        destination_address: "0.0.0.0",
+        destination_port: RandomPort(),
+
+
+    }
+}
+
+export const  GetSocksDefaultConfig = function () {
+    return {
+        update : false,
+        id: null,
+        name : '',
+        bindip : '0.0.0.0',
+        port : RandomPort(),
+        password_authentication: true,
+        enable_udp: false,
+        socks_ip: "127.0.0.1",
+        username: GeneratePassword(),
+        password: GeneratePassword(),
+    }
+}
+
+export const  GetHttpDefaultConfig = function () {
+    return {
+        update : false,
+        id: null,
+        name : '',
+        bindip : '0.0.0.0',
+        port : RandomPort(),
+        username: GeneratePassword(),
+        password: GeneratePassword(),
+    }
+}
+
 
 function TlsXtlsJsonToConfig(json_config) {
     const transport = JSON.parse(json_config.transport)
@@ -61,7 +206,6 @@ function TlsXtlsJsonToConfig(json_config) {
         }
         case "xtls": {
             config_data.xtls = true
-            // config_data.certificate = transport.xtlsSettings.certificates
             config_data.serverName = transport.xtlsSettings.serverName
             config_data.alpn = transport.xtlsSettings.alpn
             break
@@ -138,9 +282,9 @@ function ProtocolJsonToConfig (json_config){
             break
         }
         case "socks":{
-            if (protocol_setting.auth === "auth"){
-                config_data.username = protocol_setting.user
-                config_data.password = protocol_setting.pass
+            if (protocol_setting.auth === "password"){
+                config_data.username = protocol_setting.accounts[0].user
+                config_data.password = protocol_setting.accounts[0].pass
                 config_data.password_authentication = true
             }else{
                 config_data.username = ""
@@ -148,6 +292,13 @@ function ProtocolJsonToConfig (json_config){
                 config_data.password_authentication = false
             }
             config_data.enable_udp = protocol_setting.udp
+            break
+        }
+        case "http":{
+            config_data.username = protocol_setting.accounts[0].user
+            config_data.password = protocol_setting.accounts[0].pass
+            config_data.password_authentication = true
+            break
         }
     }
 }

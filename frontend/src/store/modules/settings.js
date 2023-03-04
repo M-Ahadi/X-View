@@ -164,7 +164,6 @@ const mutations = {
         state.status = payload.status
     },
     [SETTINGS.ERROR]: (state, payload) => {
-        console.log(payload)
         if (payload.code === "ERR_NETWORK"){
             state.status = 500
             return

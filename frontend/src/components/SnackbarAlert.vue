@@ -1,15 +1,22 @@
 <template>
   <v-snackbar
       v-model="snackbar_show"
+      :timeout="1000"
+      rounded="pill"
+      color="primary"
+      variant="elevated"
+      class="text-center align-content-center justify-center d-flex"
+      content-class="text-center align-content-center justify-center d-flex"
+      @update:modelValue='$emit("showSnackbar", false)'
   >
     {{ text }}
     <template v-slot:actions>
       <v-btn
           color="pink"
           variant="text"
-          @click='snackbar_show = false'
+          @click='$emit("showSnackbar", false)'
       >
-        Close
+        {{$t("message.close")}}
       </v-btn>
     </template>
   </v-snackbar>
@@ -28,13 +35,6 @@ export default {
   },
   mounted() {
     this.snackbar_show = true
-  },
-  watch: {
-    "snackbar_show": function (value) {
-      if(value === false){
-        this.$emit("ShowSnackbar", false)
-      }
-    }
   },
 
 }

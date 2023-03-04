@@ -36,7 +36,7 @@ const actions = {
             })
             .catch(function (error) {
                 commit(USER.ERROR, error)
-                console.error(error)
+                console.error("error",error)
             });
     },
     [USER.LOGOUT]: async ({commit}) => {
