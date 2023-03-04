@@ -82,7 +82,7 @@ export const TcpConfig = function (inbound_vars) {
             "header": header
         }
     }
-    return Object.assign(config, this.get_tls())
+    return Object.assign(config, GetTls(inbound_vars))
 }
 export const KcpConfig = function () {
 
@@ -96,7 +96,7 @@ export const WsConfig = function (inbound_vars) {
             "headers": {}
         }
     }
-    return Object.assign(config, this.get_tls())
+    return Object.assign(config, GetTls(inbound_vars))
 }
 export const HttpConfig = function () {
 
@@ -111,13 +111,13 @@ export const GetStream = function (inbound_vars) {
     let stream_config = null
     switch (inbound_vars.transmission) {
         case 'tcp':
-            stream_config = TcpConfig()
+            stream_config = TcpConfig(inbound_vars)
             break
         case 'kcp':
-            stream_config = KcpConfig()
+            stream_config = KcpConfig(inbound_vars)
             break
         case 'ws':
-            stream_config = WsConfig()
+            stream_config = WsConfig(inbound_vars)
             break
         case 'http':
             stream_config = HttpConfig()
@@ -128,18 +128,6 @@ export const GetStream = function (inbound_vars) {
         case 'grpc':
             stream_config = GrpcConfig()
             break
-        // default:
-        //   stream_config = {
-        //     "network": "tcp",
-        //     "security": "none",
-        //     "tcpSettings": {
-        //       "acceptProxyProtocol": false,
-        //       "header": {
-        //         "type": "none"
-        //       }
-        //     }
-        //   }
-        //   break
     }
     return stream_config
 }

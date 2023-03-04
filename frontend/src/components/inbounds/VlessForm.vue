@@ -422,6 +422,7 @@ import {mapActions, mapGetters} from "vuex";
 import {GetVlessDefaultConfig} from "@/store/modules/protocol";
 import {DatePicker} from 'v-calendar';
 import {RandomNumber} from "@/store/utils";
+import {GetStream, RemoveHeader} from "@/store/modules/config_generators";
 
 export default {
   name: "VlessForm",
@@ -456,145 +457,14 @@ export default {
     ...mapActions("certificate", {
       listCertificate: CERTIFICATE.LIST_CERTIFICATE,
     }),
-    total_form_valid() {
-      return this.valid
-    },
     updateTransmissionForm: function () {
       this.inbound_vars.masquerade = this.masquerades[0]
-    },
-    updateProtocolForm: function () {
-      this.inbound_vars.tls = false
-      this.inbound_vars.xtls = false
-      this.inbound_vars.password_authentication = false
-      this.inbound_vars.enable_udp = false
     },
     createNewHeader: function () {
       this.inbound_vars.request_headers.push({id: RandomNumber()})
     },
     removeHeader: function (header_id) {
-      for (let i = 0; i < this.inbound_vars.request_headers.length; i++) {
-        if (this.inbound_vars.request_headers[i].id === header_id) {
-          this.inbound_vars.request_headers.splice(i, 1)
-        }
-      }
-    },
-    get_tls: function () {
-      let headers = {}
-      for (let i = 0; i++; i < this.inbound_vars.request_headers.length) {
-        headers[this.inbound_vars.request_headers[i].header_name] = this.inbound_vars.request_headers[i].header_value
-      }
-      if (this.inbound_vars.tls) {
-        return {
-          "security": "tls",
-          "tlsSettings": {
-            "serverName": this.inbound_vars.serverName,
-            "alpn": this.inbound_vars.alpn
-          }
-        }
-      } else if (this.inbound_vars.xtls) {
-        return {
-          "security": "xtls",
-          "xtlsSettings": {
-            "serverName": this.inbound_vars.serverName,
-            "alpn": this.inbound_vars.alpn
-          }
-        }
-      } else {
-        return {
-          "security": "none",
-        }
-      }
-    },
-    tcp_config: function () {
-      let header = {}
-      if (this.inbound_vars.http_masquerade) {
-        header = {
-          "type": "http",
-          "request": {
-            "version": this.inbound_vars.request_version || '1.1',
-            "method": this.inbound_vars.request_method || 'GET',
-            "path": [
-              this.inbound_vars.request_path || '/'
-            ],
-            "headers": {}
-          },
-          "response": {
-            "version": this.inbound_vars.response_version || '1.1',
-            "status": this.inbound_vars.response_status || '200',
-            "reason": this.inbound_vars.response_status_description || 'OK',
-            "headers": {}
-          }
-        }
-      } else {
-        header = {"type": "none"}
-      }
-      let config = {
-        "network": "tcp",
-        "tcpSettings": {
-          "acceptProxyProtocol": this.inbound_vars.acceptProxyProtocol,
-          "header": header
-        }
-      }
-      return Object.assign(config, this.get_tls())
-    },
-    kcp_config: function () {
-
-    },
-    ws_config: function () {
-      let config = {
-        "network": this.inbound_vars.transmission,
-        "wsSettings": {
-          "acceptProxyProtocol": false,
-          "path": this.inbound_vars.path,
-          "headers": {}
-        }
-      }
-      return Object.assign(config, this.get_tls())
-    },
-    http_config: function () {
-
-    },
-    quic_config: function () {
-
-    },
-    grpc_config: function () {
-
-    },
-    get_stream: function () {
-      let stream_config = null
-      switch (this.inbound_vars.transmission) {
-        case 'tcp':
-          stream_config = this.tcp_config()
-          break
-        case 'kcp':
-          stream_config = this.kcp_config()
-          break
-        case 'ws':
-          stream_config = this.ws_config()
-          break
-        case 'http':
-          stream_config = this.http_config()
-          break
-        case 'quic':
-          stream_config = this.quic_config()
-          break
-        case 'grpc':
-          stream_config = this.grpc_config()
-          break
-          // default:
-          //   stream_config = {
-          //     "network": "tcp",
-          //     "security": "none",
-          //     "tcpSettings": {
-          //       "acceptProxyProtocol": false,
-          //       "header": {
-          //         "type": "none"
-          //       }
-          //     }
-          //   }
-          //   break
-      }
-      return stream_config
+      this.inbound_vars = RemoveHeader(header_id, this.inbound_vars)
     },
     async submit() {
       this.loading = true
@@ -638,7 +508,7 @@ export default {
         "decryption": "none",
         "fallbacks": []
       }
-      stream_settings = this.get_stream()
+      stream_settings = GetStream(this.inbound_vars)
 
       NewConfig.append("protocol_setting", JSON.stringify(settings))
       NewConfig.append("transport", JSON.stringify(stream_settings))

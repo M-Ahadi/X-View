@@ -174,6 +174,7 @@ import {CERTIFICATE, INBOUND} from "@/store/constants";
 import {mapActions, mapGetters} from "vuex";
 import { GetTrojanDefaultConfig} from "@/store/modules/protocol";
 import {DatePicker} from 'v-calendar';
+import {GetStream} from "@/store/modules/config_generators";
 
 export default {
   name: "TrojanForm",
@@ -203,124 +204,6 @@ export default {
     ...mapActions("certificate", {
       listCertificate: CERTIFICATE.LIST_CERTIFICATE,
     }),
-    get_tls: function () {
-      let headers = {}
-      for (let i = 0; i++; i < this.inbound_vars.request_headers.length) {
-        headers[this.inbound_vars.request_headers[i].header_name] = this.inbound_vars.request_headers[i].header_value
-      }
-      if (this.inbound_vars.tls) {
-        return {
-          "security": "tls",
-          "tlsSettings": {
-            "serverName": this.inbound_vars.serverName,
-            "alpn": this.inbound_vars.alpn
-          }
-        }
-      } else if (this.inbound_vars.xtls) {
-        return {
-          "security": "xtls",
-          "xtlsSettings": {
-            "serverName": this.inbound_vars.serverName,
-            "alpn": this.inbound_vars.alpn
-          }
-        }
-      } else {
-        return {
-          "security": "none",
-        }
-      }
-    },
-    tcp_config: function () {
-      let header = {}
-      if (this.inbound_vars.http_masquerade) {
-        header = {
-          "type": "http",
-          "request": {
-            "version": this.inbound_vars.request_version || '1.1',
-            "method": this.inbound_vars.request_method || 'GET',
-            "path": [
-              this.inbound_vars.request_path || '/'
-            ],
-            "headers": {}
-          },
-          "response": {
-            "version": this.inbound_vars.response_version || '1.1',
-            "status": this.inbound_vars.response_status || '200',
-            "reason": this.inbound_vars.response_status_description || 'OK',
-            "headers": {}
-          }
-        }
-      } else {
-        header = {"type": "none"}
-      }
-      let config = {
-        "network": "tcp",
-        "tcpSettings": {
-          "acceptProxyProtocol": this.inbound_vars.acceptProxyProtocol,
-          "header": header
-        }
-      }
-      return Object.assign(config, this.get_tls())
-    },
-    kcp_config: function () {
-
-    },
-    ws_config: function () {
-      let config = {
-        "network": this.inbound_vars.transmission,
-        "wsSettings": {
-          "acceptProxyProtocol": false,
-          "path": this.inbound_vars.path,
-          "headers": {}
-        }
-      }
-      return Object.assign(config, this.get_tls())
-    },
-    http_config: function () {
-
-    },
-    quic_config: function () {
-
-    },
-    grpc_config: function () {
-
-    },
-    get_stream: function () {
-      let stream_config = null
-      switch (this.inbound_vars.transmission) {
-        case 'tcp':
-          stream_config = this.tcp_config()
-          break
-        case 'kcp':
-          stream_config = this.kcp_config()
-          break
-        case 'ws':
-          stream_config = this.ws_config()
-          break
-        case 'http':
-          stream_config = this.http_config()
-          break
-        case 'quic':
-          stream_config = this.quic_config()
-          break
-        case 'grpc':
-          stream_config = this.grpc_config()
-          break
-          // default:
-          //   stream_config = {
-          //     "network": "tcp",
-          //     "security": "none",
-          //     "tcpSettings": {
-          //       "acceptProxyProtocol": false,
-          //       "header": {
-          //         "type": "none"
-          //       }
-          //     }
-          //   }
-          //   break
-      }
-      return stream_config
-    },
     async submit() {
       this.loading = true
       const NewConfig = new FormData();
@@ -352,7 +235,7 @@ export default {
         "fallbacks": []
       }
       this.inbound_vars.transmission = 'tcp'
-      stream_settings = this.get_stream()
+      stream_settings = GetStream(this.inbound_vars)
       stream_settings = Object.assign(stream_settings, {
         "tcpSettings": {
           "acceptProxyProtocol": this.inbound_vars.acceptProxyProtocol,
