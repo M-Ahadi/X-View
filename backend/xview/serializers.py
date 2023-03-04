@@ -25,7 +25,7 @@ class InboundSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Inbound
-        fields = ['id', 'name', 'enable',
+        fields = ['id', 'name', 'enable', 'sniffing',
                   'protocol', 'protocol_setting', 'transport', 'bindip',
                   'port', 'up', 'down', "total",
                   'expire','certificate']
