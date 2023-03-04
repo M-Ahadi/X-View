@@ -35,25 +35,28 @@ RUN curl -L https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linu
 
 WORKDIR /x-view
 
-COPY configs/run.sh /run.sh
-COPY configs/supervisor /etc/supervisor
-
-RUN chmod +x /run.sh &&\
-    chmod +x /etc/supervisor/stop-supervisor.sh
-
-
 COPY /backend/requirements.txt ./
 RUN pip install -r requirements.txt
 
 COPY /backend/ ./
-RUN chmod +x /x-view/healthcheck.sh
+
+COPY configs/run.sh /run.sh
+COPY configs/supervisor /etc/supervisor
+
+RUN chmod +x /run.sh &&\
+    chmod +x /etc/supervisor/stop-supervisor.sh &&\
+    chmod +x /x-view/healthcheck.sh
 
 ENV NGINX_PORT 4444
 VOLUME /x-view/db
 
 RUN apt remove -y \
     unzip &&\
-    apt autoremove -y
+    apt autoremove -y &&\
+    rm -rf /var/lib/apt/lists/*
 
 HEALTHCHECK --interval=30s --timeout=3s CMD  ./healthcheck.sh
-CMD ["/bin/bash", "/run.sh"]
+
+ENTRYPOINT ["/bin/bash", "/run.sh"]
+
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]
