@@ -12,41 +12,50 @@
       <v-card-title class="headline" justify>
         {{ $t('message.qrcode') }}
       </v-card-title>
+      <v-card-text>
       <div id="qrcode" class="align-content-center justify-center d-flex"></div>
-      <v-card-actions>
-        <v-snackbar
-            :timeout="1000"
-            rounded="pill"
-            color="primary"
-            variant="elevated"
-            class="text-center align-content-center justify-center d-flex"
-            content-class="text-center align-content-center justify-center d-flex"
-        >
-          <template v-slot:activator="{ props }">
+      </v-card-text>
+        <v-row class="px-5 py-4">
             <v-btn
-                v-bind="props"
-                rounded="pill"
-                x-large
+                rounded
                 block
+                x-large
                 variant="elevated"
                 color="blue-grey"
                 @click="clipboardData"
+
             >{{ $t('message.copy') }}
             </v-btn>
-          </template>
+        </v-row>
+          <v-row class="px-5">
+            <v-btn
+                block
+                rounded
+                x-large
+                variant="elevated"
+                color="blue-grey"
+                @click="$emit('CloseQrcode')"
+            >{{ $t('message.close') }}
+            </v-btn>
+        </v-row>
 
-          {{ $t('message.copied') }}
-        </v-snackbar>
-      </v-card-actions>
     </v-card>
   </v-row>
+  <SnackbarAlert
+      v-if="snackbar"
+      :text="$t('message.copied')"
+      @ShowSnackbar="snackbar = $event"
+  ></SnackbarAlert>
 </template>
 
 <script>
 import QRCode from '@keeex/qrcodejs-kx'
+import SnackbarAlert from "@/components/SnackbarAlert";
 
 export default {
   name: "QrcodePage",
+  components: {SnackbarAlert},
+  emits: ["CloseQrcode"],
   props: {
     text: {type: String, required: true},
     size: {type: Number, required: false, default: 256},
@@ -70,9 +79,9 @@ export default {
   data() {
     return {
       qrCode: {},
-      show_alert: false,
       btn_name: '',
-      overlay: false
+      overlay: false,
+      snackbar: false,
     }
   },
   mounted() {
@@ -95,6 +104,7 @@ export default {
     },
     clipboardData: function () {
       navigator.clipboard.writeText(this.text)
+      this.snackbar = true
     }
   }
 }

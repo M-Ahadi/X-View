@@ -7,8 +7,12 @@ export const  GeneratePassword = function () {
     return Math.random().toString(36).slice(-8);
 }
 
-export const  RandomPort = function () {
+export const  RandomNumber = function () {
     return Math.floor(Math.random() * (65536 - 10000) + 10000);
+}
+
+export const  RandomPort = function () {
+   return RandomNumber()
 }
 
 export const  uuidv4 = function () {

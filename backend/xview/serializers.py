@@ -8,16 +8,11 @@ JWT_ENCODE_HANDLER = api_settings.JWT_ENCODE_HANDLER
 
 
 class UserTokenObtainPairSerializer(TokenObtainPairSerializer):
-    # recaptchaToken = serializers.CharField(required=True)
-
     def validate(self, attrs):
-        attrs_dic = dict(attrs)
-        # recaptchaToken = attrs_dic.get('recaptchaToken')
         data = super().validate(attrs)
         refresh = self.get_token(self.user)
         data['refresh'] = str(refresh)
         data['access'] = str(refresh.access_token)
-        # data['recaptchaToken'] = str(recaptchaToken)
         return data
 
 

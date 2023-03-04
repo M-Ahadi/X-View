@@ -147,9 +147,6 @@ export default {
       }
       this.loading = false
     },
-    ShowSnackbar(value){
-      this.snackbar = value
-    }
   },
   computed: {
     ...mapGetters('settings',

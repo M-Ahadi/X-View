@@ -8,4 +8,4 @@ python manage.py initialize_data
 python manage.py make_nginx_server
 python manage.py load_configs
 
-exec /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
+exec "$@"

@@ -51,20 +51,20 @@ export const MakeConfigString = function (inbound) {
             config['net'] = inbound.transport.network
             config['type'] = "none"
             config['host'] = ""
-            config['path'] = (inbound.transport.wsSettings) ? inbound.transport.wsSettings.path : ""
+            config['path'] = inbound.transport.wsSettings ? inbound.transport.wsSettings.path : ""
             config = JSON.stringify(config)
             config = btoa(config)
             config = "vmess://" + config
             break
         case "shadowsocks":
-            server = inbound.transport.tlsSettings.serverName || window.location.hostname
+            server = inbound.transport.tlsSettings ? inbound.transport.tlsSettings.serverName : window.location.hostname
             config = inbound.protocol_setting.method + ":" + inbound.protocol_setting.password + "@" + server + ":" + inbound.port
             config = btoa(config)
             config = "ss://" + config + "#" + inbound.name
             break
         case "trojan":
-            server = inbound.transport.tlsSettings.serverName || inbound.transport.xtlsSettings.serverName || window.location.hostname
-            config = "trojan://" + inbound.protocol_setting.password + "@" + server + ":" + inbound.port + "#" + inbound.name
+            server = inbound.transport.tlsSettings ? inbound.transport.tlsSettings.serverName : inbound.transport.xtlsSettings ? inbound.transport.xtlsSettings.serverName : window.location.hostname
+            config = "trojan://" + inbound.protocol_setting.clients[0].password + "@" + server + ":" + inbound.port + "#" + inbound.name
             break
     }
     return config
