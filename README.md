@@ -1,11 +1,9 @@
 # X-View
 
 X-View is an interface for [X-ray Core](https://github.com/XTLS/Xray-core) to make VPN configuration. This project is inspired by [x-ui](https://github.com/vaxilu/x-ui) project.
-Currently, this project is in alpha state.
+
 
 ## Todos
-- [ ] Clean the code!
-- [ ] Test all configuration for all protocols
 - [ ] Add option to put vpn behind nginx
 - [ ] Add option to put vpn behind cloud
 - [ ] Support multi-user
@@ -20,7 +18,6 @@ Currently, this project is in alpha state.
 - [x] Supported protocols: vmess, vless,  shadowsocks, trojan, dokodemo-door, socks, http
 - [x] Support for configuring more transport configurations
 - [x] Customizable xray configuration template
-- [x] For more advanced configuration items, see Panel
 - [x] Supports Google Captcha v2 for login authentication (enable from admin panel)
 - [x] Configure web panel port in docker-compose.yml
 - [x] Multilingual
@@ -30,6 +27,7 @@ Currently, this project is in alpha state.
 - [x] Add certificate to nginx
 - [X] Support Dark and Light Them
 
+For more advanced configuration items, see Panel
 
 ![Menu](images/documentation/menu.jpg) \
 Easy to use menu to access different sections, change them, and language

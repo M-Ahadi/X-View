@@ -1,6 +1,22 @@
-import {GeneratePassword, RandomPort, uuidv4} from "@/store/utils";
-import {ENCRYPTIONS, NETWORKS, SHADOWSOCKS_ENRYPTIONS, TRANSMISSIONS,} from "@/store/constants";
+import {GeneratePassword, RandomNumber, RandomPort, uuidv4} from "@/store/utils";
+import {QUIC_ENCRYPTIONS, FLOWS, NETWORKS, SHADOWSOCKS_ENRYPTIONS, TRANSMISSIONS, MASQUERADES,} from "@/store/constants";
 
+const GetHeadersList = function (headers={}){
+    let header_list = []
+    let headers_key = Object.keys(headers)
+    for(let i=0; i< headers_key.length; i++){
+        header_list.push({id:RandomNumber(), header_name : headers_key[i], header_value: headers[headers_key[i]] })
+    }
+    return header_list
+}
+
+const GetMasquerade = function (masquerade_type){
+    for (let i=0; i< MASQUERADES.length; i++){
+        if (MASQUERADES[i].value === masquerade_type ){
+            return MASQUERADES[i]
+        }
+    }
+}
 
 let config_data = {}
 export const GetVlessDefaultConfig = function (){
@@ -23,24 +39,27 @@ export const GetVlessDefaultConfig = function (){
         disableInsecureEncryption : false,
         domain_name : '',
         alpn : '',
+        h2: false,
+        h1:false,
         masquerade : '',
         mtu : 1350,
         tti : 20,
-        uplink_capacity : 5,
-        downlink_capacity : 20,
+        uplikCapacity : 5,
+        downlinkCapacity : 20,
         congestion : false,
-        read_buffer_size : 2,
-        write_buffer_size : 2,
+        readBufferSize : 2,
+        writeBufferSize : 2,
         path : '/',
         host : '',
-        encryption : ENCRYPTIONS[0],
+        encryption : QUIC_ENCRYPTIONS[0],
         service_name : '',
         request_version: "1.1",
         request_method: "GET",
         request_path: "/",
         response_version: "1.1",
         response_status: 200,
-        response_status_description: "OK"
+        response_status_description: "OK",
+        header_name: ''
 
     }
 }
@@ -65,24 +84,27 @@ export const GetVmessDefaultConfig = function (){
         disableInsecureEncryption : false,
         domain_name : '',
         alpn : '',
+        h2: false,
+        h1:false,
         masquerade : '',
         mtu : 1350,
         tti : 20,
-        uplink_capacity : 5,
-        downlink_capacity : 20,
+        uplikCapacity : 5,
+        downlinkCapacity : 20,
         congestion : false,
-        read_buffer_size : 2,
-        write_buffer_size : 2,
+        readBufferSize : 2,
+        writeBufferSize : 2,
         path : '/',
         host : '',
-        encryption : ENCRYPTIONS[0],
+        encryption : QUIC_ENCRYPTIONS[0],
         service_name : '',
         request_version: "1.1",
         request_method: "GET",
         request_path: "/",
         response_version: "1.1",
         response_status: 200,
-        response_status_description: "OK"
+        response_status_description: "OK",
+        header_name: ''
 
     }
 }
@@ -107,25 +129,28 @@ export const  GetShadowsocksDefaultConfig = function () {
         disableInsecureEncryption : false,
         domain_name : '',
         alpn : '',
+        h2: false,
+        h1:false,
         masquerade : '',
         mtu : 1350,
         tti : 20,
-        uplink_capacity : 5,
-        downlink_capacity : 20,
+        uplikCapacity : 5,
+        downlinkCapacity : 20,
         congestion : false,
-        read_buffer_size : 2,
-        write_buffer_size : 2,
+        readBufferSize : 2,
+        writeBufferSize : 2,
         path : '/',
         host : '',
-        encryption : ENCRYPTIONS[0],
-        shadowsocks_encryption : SHADOWSOCKS_ENRYPTIONS[0],
+        encryption : QUIC_ENCRYPTIONS[0],
+        shadowsock_encryption : SHADOWSOCKS_ENRYPTIONS[0],
         service_name : '',
         request_version: "1.1",
         request_method: "GET",
         request_path: "/",
         response_version: "1.1",
         response_status: 200,
-        response_status_description: "OK"
+        response_status_description: "OK",
+        header_name: ''
     }
 }
 
@@ -135,6 +160,7 @@ export const  GetTrojanDefaultConfig = function () {
         id: null,
         password : GeneratePassword(),
         port : RandomPort(),
+        transmission : TRANSMISSIONS[0],
         request_headers : [],
         tls : false,
         xtls : false,
@@ -143,8 +169,29 @@ export const  GetTrojanDefaultConfig = function () {
         bindip : '0.0.0.0',
         domain_name : '',
         alpn : '',
+        h2: false,
+        h1:false,
         path : '/',
         host : '',
+        flow: FLOWS[0],
+        masquerade : '',
+        mtu : 1350,
+        tti : 20,
+        uplikCapacity : 5,
+        downlinkCapacity : 20,
+        congestion : false,
+        readBufferSize : 2,
+        writeBufferSize : 2,
+        encryption : QUIC_ENCRYPTIONS[0],
+        service_name : '',
+        request_version: "1.1",
+        request_method: "GET",
+        request_path: "/",
+        response_version: "1.1",
+        response_status: 200,
+        response_status_description: "OK",
+        header_name: '',
+        acceptProxyProtocol: false
 
     }
 }
@@ -201,12 +248,16 @@ function TlsXtlsJsonToConfig(json_config) {
         case "tls": {
             config_data.tls = true
             config_data.serverName = transport.tlsSettings.serverName
+            config_data.h2 = transport.tlsSettings.alpn.search("h2") >=0 ? "h2": ""
+            config_data.h1 = transport.tlsSettings.alpn.search("http/1.1") >=0 ? "http/1.1" : ""
             config_data.alpn = transport.tlsSettings.alpn
             break
         }
         case "xtls": {
             config_data.xtls = true
             config_data.serverName = transport.xtlsSettings.serverName
+            config_data.h2 = transport.tlsSettings.alpn.search("h2") >=0 ? "h2": ""
+            config_data.h1 = transport.tlsSettings.alpn.search("http/1.1") >=0 ? "http/1.1" : ""
             config_data.alpn = transport.xtlsSettings.alpn
             break
         }
@@ -232,22 +283,37 @@ function TransportJsonToConfig(transport) {
             break
         }
         case 'kcp': {
+            config_data.password = transport.kcpSettings.seed
+            config_data.mtu = transport.kcpSettings.mtu
+            config_data.tti = transport.kcpSettings.tti
+            config_data.uplikCapacity = transport.kcpSettings.uplikCapacity
+            config_data.downlinkCapacity = transport.kcpSettings.downlinkCapacity
+            config_data.readBufferSize = transport.kcpSettings.readBufferSize
+            config_data.writeBufferSize = transport.kcpSettings.writeBufferSize
+            config_data.masquerade = GetMasquerade(transport.kcpSettings.header.type)
             break
         }
         case 'ws': {
             config_data.acceptProxyProtocol = transport.wsSettings.acceptProxyProtocol
             config_data.path = transport.wsSettings.path
+            config_data.request_headers = GetHeadersList(transport.wsSettings.headers)
             break
         }
-        default: {
-            config_data.acceptProxyProtocol = transport.tcpSettings.acceptProxyProtocol
+        case 'http': {
+            config_data.path = transport.httpSettings.path
+            config_data.host = transport.httpSettings.host
+            break
         }
-        // case 'http':
-        //     break
-        // case 'quic':
-        //     break
-        // case 'grpc':
-        //     break
+        case 'quic': {
+            config_data.acceptProxyProtocol = transport.quicSettings.acceptProxyProtocol
+            config_data.password = transport.quicSettings.key
+            config_data.masquerade = GetMasquerade(transport.quicSettings.header.type)
+            break
+        }
+        case 'grpc': {
+            config_data.service_name = transport.grpcSettings.serviceName
+            break
+        }
     }
 }
 
@@ -271,7 +337,7 @@ function ProtocolJsonToConfig (json_config){
         }
         case "shadowsocks": {
             config_data.shadowsocks_password = protocol_setting.password
-            config_data.shadowsocks_encryption = protocol_setting.method
+            config_data.shadowsock_encryption = protocol_setting.method
             config_data.network = protocol_setting.network
             break
         }

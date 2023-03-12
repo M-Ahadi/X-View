@@ -7,7 +7,7 @@
                 v-model="inbound_vars.name"
                 solo
                 density="compact"
-            ></v-text-field>
+            />
             <v-row>
               <v-col>
                 <v-text-field
@@ -17,7 +17,7 @@
                     v-model="inbound_vars.bindip"
                     solo
                     density="compact"
-                ></v-text-field>
+                />
               </v-col>
               <v-col>
                 <v-text-field
@@ -26,7 +26,8 @@
                     v-model="inbound_vars.port"
                     solo
                     density="compact"
-                ></v-text-field>
+                    type="number"
+                />
               </v-col>
             </v-row>
             <v-row>
@@ -60,7 +61,7 @@
                     v-model="inbound_vars.destination_address"
                     :rules="[rules.required]"
                     density="compact"
-                ></v-text-field>
+                />
               </v-col>
               <v-col>
                 <v-text-field
@@ -68,7 +69,8 @@
                     v-model="inbound_vars.destination_port"
                     :rules="[rules.required]"
                     density="compact"
-                ></v-text-field>
+                    type="number"
+                />
               </v-col>
             </v-row>
             <v-select
@@ -78,7 +80,7 @@
                 :items="networks"
                 solo
                 density="compact"
-            ></v-select>
+            />
             <v-row>
               <v-col>
                 <v-btn

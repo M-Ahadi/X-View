@@ -7,7 +7,7 @@
                 v-model="inbound_vars.name"
                 solo
                 density="compact"
-            ></v-text-field>
+            />
             <v-row>
               <v-col>
                 <v-text-field
@@ -17,7 +17,7 @@
                     v-model="inbound_vars.bindip"
                     solo
                     density="compact"
-                ></v-text-field>
+                />
               </v-col>
               <v-col>
                 <v-text-field
@@ -26,7 +26,8 @@
                     v-model="inbound_vars.port"
                     solo
                     density="compact"
-                ></v-text-field>
+                    type="number"
+                />
               </v-col>
             </v-row>
             <v-row>
@@ -49,7 +50,6 @@
                     v-model="inbound_vars.total"
                     solo
                     density="compact"
-
                 />
               </v-col>
             </v-row>
@@ -61,71 +61,64 @@
                     v-model="inbound_vars.password"
                     density="compact"
                     :value="inbound_vars.password"
-                ></v-text-field>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col>
-                <v-checkbox
-                    v-model="inbound_vars.acceptProxyProtocol"
-                    color="primary"
-                    hide-details
-                    :label="$t('message.accept_proxy_protocol')"
-                    density="compact"
-                >
-                </v-checkbox>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col>
-                <v-checkbox
-                    v-model="inbound_vars.tls"
-                    color="primary"
-                    hide-details
-                    label="TLS"
-                    density="compact"
-                >
-                </v-checkbox>
+                />
               </v-col>
               <v-col>
-                <v-checkbox
-                    v-model="inbound_vars.xtls"
-                    color="primary"
-                    hide-details
-                    label="XTLS"
+                <v-select
+                    :label="$t('message.flow')"
+                    v-model="inbound_vars.flow"
+                    :rules="[rules.required]"
+                    :items="flows"
+                    item-title="name"
+                    item-value="id"
+                    solo
                     density="compact"
-                >
-                </v-checkbox>
+                />
               </v-col>
             </v-row>
-            <section
+            <v-select
+                :label="$t('message.transmission')"
+                v-model="inbound_vars.transmission"
+                :rules="[rules.required]"
+                :items="transmissions"
+                @update:modelValue="updateTransmissionForm()"
+                solo
+                density="compact"
+            />
+            <TcpSection
+                v-if="inbound_vars.transmission === 'tcp'"
+                :inbound="inbound_vars"
+            />
+            <KcpSection
+                v-if="inbound_vars.transmission === 'kcp'"
+                :inbound="inbound_vars"
+            />
+            <WsSection
+                v-if="inbound_vars.transmission === 'ws'"
+                :inbound="inbound_vars"
+            />
+            <HttpSection
+                v-if="inbound_vars.transmission === 'http'"
+                :inbound="inbound_vars"
+            />
+            <QuicSection
+                v-if="inbound_vars.transmission === 'quic'"
+                :inbound="inbound_vars"
+            />
+            <GrpcSection
+                v-if="inbound_vars.transmission === 'grpc'"
+                :inbound="inbound_vars"
+            />
+            <HttpMasqueradeSection
+                v-if="inbound_vars.http_masquerade"
+                :inbound="inbound_vars"
+            />
+            <TlsSection
+                :inbound="inbound_vars"
                 v-if="inbound_vars.tls || inbound_vars.xtls"
-            >
-              <v-text-field
-                  v-model="inbound_vars.serverName"
-                  :label="$t('message.domain_name')"
-                  density="compact"
-              >
-              </v-text-field>
-              <v-text-field
-                  v-model="inbound_vars.alpn"
-                  label="ALPN"
-                  density="compact"
-              >
-              </v-text-field>
-              <v-select
-                  :label="$t('message.certificate')"
-                  v-model="inbound_vars.certificate"
-                  :rules="[rules.required]"
-                  :items="certificates"
-                  item-title="name"
-                  item-value="id"
-                  solo
-                  density="compact"
-              >
-              </v-select>
-            </section>
-            <v-checkbox
+            />
+
+            <v-checkbox-btn
                 v-model="inbound_vars.sniffing"
                 color="primary"
                 hide-details
@@ -170,15 +163,31 @@
 </template>
 
 <script>
-import {CERTIFICATE, INBOUND} from "@/store/constants";
+import {CERTIFICATE, FLOWS, INBOUND, MASQUERADES, TRANSMISSIONS} from "@/store/constants";
 import {mapActions, mapGetters} from "vuex";
 import { GetTrojanDefaultConfig} from "@/store/modules/protocol";
 import {DatePicker} from 'v-calendar';
 import {GetStream} from "@/store/modules/config_generators";
+import TcpSection from "@/components/inbounds/sections/TcpSection";
+import WsSection from "@/components/inbounds/sections/WsSection";
+import HttpSection from "@/components/inbounds/sections/HttpSection";
+import GrpcSection from "@/components/inbounds/sections/GrpcSection";
+import HttpMasqueradeSection from "@/components/inbounds/sections/HttpMasqueradeSection";
+import KcpSection from "@/components/inbounds/sections/KcpSection";
+import QuicSection from "@/components/inbounds/sections/QuicSection";
+import TlsSection from "@/components/inbounds/sections/TlsSection";
 
 export default {
   name: "TrojanForm",
   components: {
+    TlsSection,
+    QuicSection,
+    KcpSection,
+    HttpMasqueradeSection,
+    GrpcSection,
+    HttpSection,
+    WsSection,
+    TcpSection,
     DatePicker
   },
   props: {
@@ -188,6 +197,9 @@ export default {
     return {
       inbound_vars: {},
       certificates: [],
+      masquerades: MASQUERADES,
+      transmissions: TRANSMISSIONS,
+      flows: FLOWS,
       valid: false,
       loading: false,
       rules: {
@@ -204,6 +216,12 @@ export default {
     ...mapActions("certificate", {
       listCertificate: CERTIFICATE.LIST_CERTIFICATE,
     }),
+    updateTransmissionForm: function () {
+      this.inbound_vars.masquerade = this.masquerades[0]
+      this.inbound_vars.tls = false
+      this.inbound_vars.xtls = false
+      this.inbound_vars.request_headers = this.inbound_vars.request_headers ? this.inbound_vars.request_headers : []
+    },
     async submit() {
       this.loading = true
       const NewConfig = new FormData();
@@ -229,21 +247,22 @@ export default {
         "clients": [
           {
             "password": this.inbound_vars.password,
-            "flow": "xtls-rprx-direct"
+            "flow": this.inbound_vars.flow,
+            "email": this.inbound_vars.port +"@xview.local",
+            "level": 0,
           }
         ],
         "fallbacks": []
       }
-      this.inbound_vars.transmission = 'tcp'
       stream_settings = GetStream(this.inbound_vars)
-      stream_settings = Object.assign(stream_settings, {
-        "tcpSettings": {
-          "acceptProxyProtocol": this.inbound_vars.acceptProxyProtocol,
-          "header": {
-            "type": "none"
-          }
-        }
-      })
+      // stream_settings = Object.assign(stream_settings, {
+      //   "tcpSettings": {
+      //     "acceptProxyProtocol": this.inbound_vars.acceptProxyProtocol,
+      //     "header": {
+      //       "type": "none"
+      //     }
+      //   }
+      // })
       NewConfig.append("protocol_setting", JSON.stringify(settings))
       NewConfig.append("transport", JSON.stringify(stream_settings))
       if (this.inbound_vars.update) {
@@ -253,8 +272,8 @@ export default {
       }
 
       this.loading = false
-      this.$emit("CloseForm")
-      this.$router.go({name: 'inbound'})
+      // this.$emit("CloseForm")
+      // this.$router.go({name: 'inbound'})
     },
   },
   computed: {
@@ -273,6 +292,7 @@ export default {
       if(this.inbound_vars.expire){
         this.inbound_vars.expire = new Date(this.inbound_vars.expire * 1000)
       }
+      this.inbound_vars.flow = this.inbound_vars.protocol_setting.clients[0].flow
     }else {
       this.inbound_vars = GetTrojanDefaultConfig()
     }

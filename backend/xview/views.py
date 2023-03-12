@@ -1,9 +1,8 @@
 import logging
-
-# Create your views here.
-import platform
-
+import subprocess
+from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, status, filters
+from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -11,6 +10,7 @@ from rest_framework.response import Response
 from captcha.models import Captcha
 from .models import Inbound, Certificate, User
 from .pagination import InboundPagination
+from .permissions import UpdateOwnProfile
 from .serializers import InboundSerializer, UserTokenObtainPairSerializer, InboundStatusSerializer, \
     CertificateSerializer, UserSerializer
 from .utils import check_captcha
@@ -21,7 +21,6 @@ logger = logging.getLogger(__name__)
 class InboundViewSet(viewsets.ModelViewSet):
     serializer_class = InboundSerializer
     queryset = Inbound.objects.all()
-    # authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
     pagination_class = InboundPagination
 
@@ -29,26 +28,23 @@ class InboundViewSet(viewsets.ModelViewSet):
         id = kwargs.get("pk")
         logger.info(f"Requested to delete inbound id {id}")
         if id:
-            instance = Inbound.objects.filter(id=id).first()
-            if instance:
-                instance.delete()
-                logger.info(f"Inbound id {id} deleted.")
+            instance = get_object_or_404(Inbound, id=id)
+            instance.delete()
+            logger.info(f"Inbound id {id} deleted.")
             return Response({}, status=status.HTTP_200_OK)
-        return Response({}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({}, status=status.HTTP_404_NOT_FOUND)
 
     def perform_update(self, serializer):
         super(InboundViewSet, self).perform_update(serializer)
         logger.info("Inbounds updated")
         Inbound.create_config_json()
-        if platform.system() == "Linux":
-            Inbound.restart_xray()
+        Inbound.restart_xray()
 
     def perform_create(self, serializer):
         super(InboundViewSet, self).perform_create(serializer)
         logger.info("An inbounds created")
         Inbound.create_config_json()
-        if platform.system() == "Linux":
-            Inbound.restart_xray()
+        Inbound.restart_xray()
 
 
 class InboundStatusView(viewsets.ModelViewSet):
@@ -62,8 +58,7 @@ class InboundStatusView(viewsets.ModelViewSet):
         super(InboundStatusView, self).perform_update(serializer)
         logger.info("Inbounds status updated")
         Inbound.create_config_json()
-        if platform.system() == "Linux":
-            Inbound.restart_xray()
+        Inbound.restart_xray()
 
 
 class CertificateView(viewsets.ModelViewSet):
@@ -92,12 +87,11 @@ class UserTokenObtainPairView(TokenObtainPairView):
             return Response({}, status=status.HTTP_400_BAD_REQUEST)
 
 
-
 class UserViewSet(viewsets.ModelViewSet):
     http_method_names = ["post"]
     serializer_class = UserSerializer
     queryset = User.objects.all()
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,UpdateOwnProfile,)
     filter_backends = (filters.SearchFilter,)
     search_fields = ('username',)
 
@@ -117,3 +111,12 @@ class UserViewSet(viewsets.ModelViewSet):
         else:
             logger.error(serializer.errors)
         return Response({}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class GenerateKeyView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, key_length):
+        # result = subprocess.run(["/usr/bin/openssl","rand","-base64", str(key_length)], capture_output=True)
+        result = subprocess.run(["openssl", "rand", "-base64", str(key_length)], capture_output=True)
+        return Response({"password": result.stdout})

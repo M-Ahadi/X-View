@@ -3,8 +3,15 @@ import axios from 'axios';
 // axios.defaults.withCredentials = true;
 axios.defaults.baseURL = process.env.VUE_APP_API;
 
-export const  GeneratePassword = function () {
-    return Math.random().toString(36).slice(-8);
+export const  GeneratePassword = function (passwordLength = 12) {
+    const chars = "0123456789abcdefghijklmnopqrstuvwxyz!@#$%^&*()ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    let password = "";
+    let randomNumber = 0
+    for (let i = 0; i <= passwordLength; i++) {
+        randomNumber = Math.floor(Math.random() * chars.length);
+        password += chars.substring(randomNumber, randomNumber +1);
+    }
+    return password
 }
 
 export const  RandomNumber = function () {

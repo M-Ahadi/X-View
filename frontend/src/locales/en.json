@@ -33,6 +33,7 @@
     "id": "ID",
     "disable_insecure_encryption": "Disable Insecure Encryption",
     "accept_proxy_protocol": "Accept Proxy Protocol",
+    "flow": "Flow",
     "http_masquerade": "Http Masquerade",
     "masquerade": "Masquerade",
     "uplink_capacity": "Uplink Capacity (MB/S)",
@@ -107,6 +108,7 @@
     "get_captcha": "Get Google Captcha v2 keys",
     "nginx": "Nginx",
     "extra_config": "Extra Config",
-    "nginx_port": "If you configure different port than default port, x-view will listen on both ports, but if you configure same port, it will be overwrite to https."
+    "nginx_port": "If you configure different port than default port, x-view will listen on both ports, but if you configure same port, it will be overwrite to https.",
+    "vless_alert": "Vless without TLS or XTLS is not secure. You should enable one of them."
   }
 }
