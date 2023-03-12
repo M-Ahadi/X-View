@@ -1,5 +1,6 @@
 import json
 import logging
+import platform
 import subprocess
 
 from django.contrib.auth.models import AbstractUser
@@ -47,13 +48,17 @@ class Inbound(models.Model):
 
     @staticmethod
     def restart_xray():
-        logger.info("restart xray service")
-        subprocess.Popen("/usr/bin/supervisorctl restart xray", shell=True)
+        if platform.system() == "Linux":
+            logger.info("restart xray service")
+            subprocess.Popen("/usr/bin/supervisorctl restart xray", shell=True)
 
     @staticmethod
     def create_config_json():
         rules = {
-            "log": None,
+            "log": {
+                "loglevel": "warning",
+                "access": "/var/log/x-core/access.log"
+            },
             "routing": {
                 "rules": [
                     {
@@ -137,12 +142,16 @@ class Inbound(models.Model):
 
         for inbound in inbounds_list:
             streamSettings = json.loads(inbound.transport)
-            if streamSettings['security'] == 'tls':
+            if streamSettings.get("security") == 'tls':
                 streamSettings['tlsSettings']['certificates'] = [{
                     "certificate": inbound.certificate.certificate.split(","),
                     "key": inbound.certificate.privatekey.split(","),
                 }]
-
+            if streamSettings.get("security") == 'xtls':
+                streamSettings['xtlsSettings']['certificates'] = [{
+                    "certificate": inbound.certificate.certificate.split(","),
+                    "key": inbound.certificate.privatekey.split(","),
+                }]
             inbounds_config.append(
             {
                 "listen": inbound.bindip,

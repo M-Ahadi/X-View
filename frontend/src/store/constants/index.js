@@ -5,7 +5,8 @@ export const INBOUND = {
     UPDATE_STATUS: 'update_status',
     DELETE_INBOUND: 'delete_inbound',
     ADD_INBOUND: 'add_inbound',
-    ERROR: 'error'
+    ERROR: 'error',
+    GET_PASSWORD: "get_password"
 }
 
 export const CERTIFICATE = {
@@ -41,6 +42,11 @@ export const SETTINGS = {
     UPDATE_NGINX: "update_nginx",
     ERROR: "error"
 }
+export const SHADOWSOCKS_TRANSMISSIONS = [
+    'tcp',
+    'ws',
+    'quic',
+]
 
 export const TRANSMISSIONS = [
     'tcp',
@@ -59,10 +65,14 @@ export const NETWORKS = [
 export const  SHADOWSOCKS_ENRYPTIONS = [
     'aes-128-gcm',
     'aes-256-gcm',
-    'chacha20-poly1305'
+    'chacha20-poly1305',
+    'xchacha20-poly1305',
+    '2022-blake3-aes-128-gcm',
+    '2022-blake3-aes-256-gcm',
+    '2022-blake3-chacha20-poly1305',
 ]
 
-export const ENCRYPTIONS = [
+export const QUIC_ENCRYPTIONS = [
     'none',
     'aes-128-gcm',
     'chacha20-poly1305'
@@ -79,10 +89,17 @@ export const PROTOCOLS = [
 ]
 
 export const MASQUERADES = [
-    {name: 'None (not masquerade)', value: 1},
-    {name: 'srtp (masquerade video call)', value: 2},
-    {name: 'udp (masquerade BT download)', value: 3},
-    {name: 'wechat-video (masquerade WeChat Video call)', value: 4},
-    {name: 'dtls (masquerade DTLS 1.2 packages)', value: 5},
-    {name: 'wireguard（masquerade wireguard packages', value: 6},
+    {name: 'None (not masquerade)', value: "none"},
+    {name: 'srtp (masquerade video call)', value: "srtp"},
+    {name: 'udp (masquerade BT download)', value: "utp"},
+    {name: 'wechat-video (masquerade WeChat Video call)', value: "wechat-video"},
+    {name: 'dtls (masquerade DTLS 1.2 packages)', value: "dtls"},
+    {name: 'wireguard（masquerade wireguard packages)', value: "wireguard"},
+]
+
+export const FLOWS = [
+    "xtls-rprx-origin",
+    "xtls-rprx-direct",
+    "xtls-rprx-splice",
+    "xtls-rprx-vision"
 ]

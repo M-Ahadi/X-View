@@ -7,7 +7,7 @@
         v-model="inbound_vars.name"
         solo
         density="compact"
-    ></v-text-field>
+    />
     <v-row>
       <v-col>
         <v-text-field
@@ -17,7 +17,7 @@
             v-model="inbound_vars.bindip"
             solo
             density="compact"
-        ></v-text-field>
+        />
       </v-col>
       <v-col>
         <v-text-field
@@ -26,7 +26,8 @@
             v-model="inbound_vars.port"
             solo
             density="compact"
-        ></v-text-field>
+            type="number"
+        />
       </v-col>
     </v-row>
     <v-row>
@@ -57,8 +58,7 @@
         :rules="[rules.required]"
         v-model="inbound_vars.uid"
         density="compact"
-    >
-    </v-text-field>
+    />
     <v-select
         :label="$t('message.transmission')"
         v-model="inbound_vars.transmission"
@@ -67,312 +67,42 @@
         @update:modelValue="updateTransmissionForm()"
         solo
         density="compact"
-    ></v-select>
-    <v-row>
-      <v-col
-          v-if="['quic'].find(member=>member===inbound_vars.transmission)">
-        <v-select
-            :label="$t('message.encryption')"
-            v-model="inbound_vars.encryption"
-            :rules="[rules.required]"
-            :items="encryptions"
-            solo
-            density="compact"
-        ></v-select>
-      </v-col>
-      <v-col
-          v-if="['kcp','quic'].find(member=>member===inbound_vars.transmission)">
-        <v-text-field
-            :label="$t('message.password')"
-            :rules="[rules.required]"
-            v-model="inbound_vars.password"
-            density="compact"
-            :value="inbound_vars.password"
-        ></v-text-field>
-      </v-col>
-    </v-row>
-    <v-select
-        v-if="['quic','kcp'].find(member=>member===inbound_vars.transmission)"
-        :label="$t('message.masquerade')"
-        v-model="inbound_vars.masquerade"
-        :rules="[rules.required]"
-        :items="masquerades"
-        solo
-        density="compact"
-        item-title="name"
-        item-value="value"
-        return-object
-    >
-    </v-select>
-    <section>
-      <section
-          v-if="['kcp'].find(member=>member===inbound_vars.transmission)"
-      >
-        <v-row
-        >
-          <v-col>
-            <v-text-field
-                :label="$t('message.mtu')"
-                :rules="[rules.required]"
-                v-model="inbound_vars.mtu"
-                density="compact"
-            >
-            </v-text-field>
-          </v-col>
-          <v-col>
-            <v-text-field
-                :label="$t('message.tti')"
-                :rules="[rules.required]"
-                v-model="inbound_vars.tti"
-                density="compact"
-            >
-            </v-text-field>
-          </v-col>
-        </v-row>
-        <v-row
-        >
-          <v-col>
-            <v-text-field
-                :label="$t('message.uplink_capacity')"
-                :rules="[rules.required]"
-                v-model="inbound_vars.uplink_capacity"
-                density="compact"
-            >
-            </v-text-field>
-          </v-col>
-          <v-col>
-            <v-text-field
-                class="py-0 my-0"
-                :label="$t('message.downlink_capacity')"
-                :rules="[rules.required]"
-                v-model="inbound_vars.downlink_capacity"
-                density="compact"
-            >
-            </v-text-field>
-          </v-col>
-        </v-row>
-        <v-checkbox
-            v-model="inbound_vars.congestion"
-            color="primary"
-            hide-details
-            :label="$t('message.congestion')"
-            density="compact"
-        >
-        </v-checkbox>
-        <v-row>
-          <v-col>
-            <v-text-field
-                :label="$t('message.read_buffer_size')"
-                :rules="[rules.required]"
-                v-model="inbound_vars.read_buffer_size"
-                density="compact"
-            >
-            </v-text-field>
-          </v-col>
-          <v-col>
-            <v-text-field
-                :label="$t('message.write_buffer_size')"
-                :rules="[rules.required]"
-                v-model="inbound_vars.write_buffer_size"
-                density="compact"
-            >
-            </v-text-field>
-          </v-col>
-        </v-row>
-      </section>
-      <section
-          v-if="inbound_vars.transmission === 'ws'"
-      >
-        <v-text-field
-            v-model="inbound_vars.path"
-            :label="$t('message.path')"
-            density="compact"
-        ></v-text-field>
-        <v-row>
-          <v-col>
-            {{ $t('message.add_header') }}
-            <v-btn
-                variant="outlined"
-                size="small"
-                @click="createNewHeader()"
-            >
-              <v-icon>mdi-plus-box</v-icon>
-            </v-btn>
-          </v-col>
-        </v-row>
-        <v-row
-            v-for="item in inbound_vars.request_headers"
-            :key="item.id"
-            density="compact"
-        >
-          <v-col
-              cols="5"
-          >
-            <v-text-field
-                v-model="item.inbound_vars.header_name"
-                :label="$t('message.name')"
-                density="compact"
-            >
-            </v-text-field>
-          </v-col>
-          <v-col
-              cols="5"
-          >
-            <v-text-field
-                v-model="item.header_value"
-                :label="$t('message.value')"
-                density="compact"
-            >
-            </v-text-field>
-          </v-col>
-          <v-col
-              cols="2"
-              density="compact"
-          >
-            <v-btn
-                variant="outlined"
-                size="small"
-                @click="removeHeader(item.id)"
-            >
-              <v-icon>mdi-minus-box</v-icon>
-
-            </v-btn>
-          </v-col>
-        </v-row>
-      </section>
-
-    </section>
-    <section
+    />
+    <TcpSection
+        v-if="inbound_vars.transmission === 'tcp'"
+        :inbound="inbound_vars"
+        xtls="true"
+    />
+    <KcpSection
+        v-if="inbound_vars.transmission === 'kcp'"
+        :inbound="inbound_vars"
+    />
+    <WsSection
+        v-if="inbound_vars.transmission === 'ws'"
+        :inbound="inbound_vars"
+    />
+    <HttpSection
         v-if="inbound_vars.transmission === 'http'"
-    >
-      <v-text-field
-          v-model="inbound_vars.path"
-          :label="$t('message.path')"
-          density="compact"
-      ></v-text-field>
-      <v-text-field
-          v-model="inbound_vars.host"
-          :label="$t('message.host')"
-          density="compact"
-      ></v-text-field>
-    </section>
-
-    <v-text-field
+        :inbound="inbound_vars"
+    />
+    <QuicSection
+        v-if="inbound_vars.transmission === 'quic'"
+        :inbound="inbound_vars"
+    />
+    <GrpcSection
         v-if="inbound_vars.transmission === 'grpc'"
-        :label="$t('message.service_name')"
-        :rules="[rules.required]"
-        v-model="inbound_vars.service_name"
-        density="compact"
-    ></v-text-field>
+        :inbound="inbound_vars"
+    />
 
-    <v-row>
-      <v-col>
-        <v-checkbox
-            v-if="['tcp'].find(member=>member===inbound_vars.transmission)"
-            v-model="inbound_vars.http_masquerade"
-            color="primary"
-            hide-details
-            :label="$t('message.http_masquerade')"
-            density="compact"
-        >
-        </v-checkbox>
-      </v-col>
-    </v-row>
-    <section
+    <HttpMasqueradeSection
         v-if="inbound_vars.http_masquerade"
-    >
-      <v-row>
-        <v-col>
-          <v-text-field
-              :label="$t('message.request_version')"
-              v-model="inbound_vars.request_version"
-              :model-value="inbound_vars.request_version || '1.1'"
-              density="compact"
-          />
-          <v-text-field
-              :label="$t('message.request_method')"
-              v-model="inbound_vars.request_method"
-              :model-value="inbound_vars.request_method || 'GET'"
-              density="compact"
-          />
-          <v-text-field
-              :label="$t('message.request_path')"
-              v-model="inbound_vars.request_path"
-              :model-value="inbound_vars.request_path || '/'"
-              density="compact"
-          />
-          <v-text-field
-              :label="$t('message.response_version')"
-              v-model="inbound_vars.response_version"
-              :model-value="inbound_vars.response_version || '1.1'"
-              density="compact"
-          />
-          <v-text-field
-              :label="$t('message.response_status')"
-              v-model="inbound_vars.response_status"
-              :model-value="inbound_vars.response_status || 200"
-              density="compact"
-          />
-          <v-text-field
-              :label="$t('message.response_status_description')"
-              v-model="inbound_vars.response_status_description"
-              :model-value="inbound_vars.response_status_description || 'OK'"
-              density="compact"
-          />
-        </v-col>
-      </v-row>
-
-    </section>
-    <v-row>
-      <v-col>
-        <v-checkbox
-            v-model="inbound_vars.tls"
-            color="primary"
-            hide-details
-            label="TLS"
-            density="compact"
-        >
-        </v-checkbox>
-      </v-col>
-      <v-col>
-        <v-checkbox
-            v-model="inbound_vars.xtls"
-            color="primary"
-            hide-details
-            label="XTLS"
-            density="compact"
-        >
-        </v-checkbox>
-      </v-col>
-    </v-row>
-    <section
+        :inbound="inbound_vars"
+    />
+    <TlsSection
+        :inbound="inbound_vars"
         v-if="inbound_vars.tls || inbound_vars.xtls"
-    >
-      <v-text-field
-          v-model="inbound_vars.serverName"
-          :label="$t('message.domain_name')"
-          density="compact"
-      >
-      </v-text-field>
-      <v-text-field
-          v-model="inbound_vars.alpn"
-          label="ALPN"
-          density="compact"
-      >
-      </v-text-field>
-      <v-select
-          :label="$t('message.certificate')"
-          v-model="inbound_vars.certificate"
-          :rules="[rules.required]"
-          :items="certificates"
-          item-title="name"
-          item-value="id"
-          solo
-          density="compact"
-      >
-      </v-select>
-    </section>
-    <v-checkbox
+    />
+    <v-checkbox-btn
         v-model="inbound_vars.sniffing"
         color="primary"
         hide-details
@@ -413,20 +143,42 @@
         </v-btn>
       </v-col>
     </v-row>
+
+    <v-col
+        class="text-start"
+        v-if="!(inbound_vars.tls || inbound_vars.xtls)">
+      <v-icon color="red">mdi-alert</v-icon>
+      <a>{{ $t('message.vless_alert')}}</a>
+    </v-col>
   </v-form>
 </template>
 
 <script>
-import {CERTIFICATE, ENCRYPTIONS, INBOUND, MASQUERADES, NETWORKS, PROTOCOLS, TRANSMISSIONS} from "@/store/constants";
+import {CERTIFICATE, INBOUND, MASQUERADES, TRANSMISSIONS} from "@/store/constants";
 import {mapActions, mapGetters} from "vuex";
 import {GetVlessDefaultConfig} from "@/store/modules/protocol";
 import {DatePicker} from 'v-calendar';
-import {RandomNumber} from "@/store/utils";
-import {GetStream, RemoveHeader} from "@/store/modules/config_generators";
+import {GetStream} from "@/store/modules/config_generators";
+import KcpSection from "@/components/inbounds/sections/KcpSection";
+import QuicSection from "@/components/inbounds/sections/QuicSection";
+import TlsSection from "@/components/inbounds/sections/TlsSection";
+import WsSection from "@/components/inbounds/sections/WsSection";
+import TcpSection from "@/components/inbounds/sections/TcpSection";
+import HttpSection from "@/components/inbounds/sections/HttpSection";
+import GrpcSection from "@/components/inbounds/sections/GrpcSection";
+import HttpMasqueradeSection from "@/components/inbounds/sections/HttpMasqueradeSection";
 
 export default {
   name: "VlessForm",
   components: {
+    HttpMasqueradeSection,
+    GrpcSection,
+    HttpSection,
+    TcpSection,
+    WsSection,
+    TlsSection,
+    QuicSection,
+    KcpSection,
     DatePicker
   },
   props: {
@@ -434,12 +186,9 @@ export default {
   },
   data() {
     return {
-      protocols: PROTOCOLS,
       masquerades: MASQUERADES,
-      encryptions: ENCRYPTIONS,
       transmissions: TRANSMISSIONS,
       inbound_vars: {},
-      networks: NETWORKS,
       certificates: [],
       valid: false,
       loading: false,
@@ -459,12 +208,9 @@ export default {
     }),
     updateTransmissionForm: function () {
       this.inbound_vars.masquerade = this.masquerades[0]
-    },
-    createNewHeader: function () {
-      this.inbound_vars.request_headers.push({id: RandomNumber()})
-    },
-    removeHeader: function (header_id) {
-      this.inbound_vars = RemoveHeader(header_id, this.inbound_vars)
+      this.inbound_vars.tls = false
+      this.inbound_vars.xtls = false
+      this.inbound_vars.request_headers = this.inbound_vars.request_headers ? this.inbound_vars.request_headers : []
     },
     async submit() {
       this.loading = true
@@ -501,8 +247,8 @@ export default {
         "clients": [
           {
             "id": this.inbound_vars.uid,
-            "email": this.inbound_vars.uid + "@xview.local",
-            "flow": "xtls-rprx-direct"
+            "email": this.inbound_vars.port + "@xview.local",
+            "level": 0,
           }
         ],
         "decryption": "none",
@@ -532,14 +278,14 @@ export default {
   async mounted() {
     await this.listCertificate()
     this.certificates = this.getCertificateList
-    if(this.inbound){
+    if (this.inbound) {
       this.inbound_vars = JSON.parse(JSON.stringify(this.inbound))
       this.inbound_vars.protocol_setting = JSON.parse(this.inbound_vars.protocol_setting)
       this.inbound_vars.transport = JSON.parse(this.inbound_vars.transport)
-      if(this.inbound_vars.expire){
+      if (this.inbound_vars.expire) {
         this.inbound_vars.expire = new Date(this.inbound_vars.expire * 1000)
       }
-    }else {
+    } else {
       this.inbound_vars = GetVlessDefaultConfig()
     }
   },

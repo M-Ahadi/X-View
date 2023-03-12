@@ -7,7 +7,7 @@
                 v-model="inbound_vars.name"
                 solo
                 density="compact"
-            ></v-text-field>
+            />
             <v-row>
               <v-col>
                 <v-text-field
@@ -17,7 +17,7 @@
                     v-model="inbound_vars.bindip"
                     solo
                     density="compact"
-                ></v-text-field>
+                />
               </v-col>
               <v-col>
                 <v-text-field
@@ -26,7 +26,8 @@
                     v-model="inbound_vars.port"
                     solo
                     density="compact"
-                ></v-text-field>
+                    type="number"
+                />
               </v-col>
             </v-row>
             <v-row>
@@ -49,31 +50,26 @@
                     v-model="inbound_vars.total"
                     solo
                     density="compact"
-
                 />
               </v-col>
             </v-row>
-            <v-row>
-              <v-col>
-                <v-select
-                    :label="$t('message.encryption')"
-                    v-model="inbound_vars.shadowsocks_encryption"
-                    :rules="[rules.required]"
-                    :items="shadowsocks_encryptions"
-                    solo
-                    density="compact"
-                ></v-select>
-              </v-col>
-              <v-col>
-                <v-text-field
-                    :label="$t('message.password')"
-                    v-model="inbound_vars.shadowsocks_password"
-                    :rules="[rules.required]"
-                    density="compact"
-                    :value="inbound_vars.shadowsocks_password"
-                ></v-text-field>
-              </v-col>
-            </v-row>
+            <v-select
+                :label="$t('message.encryption')"
+                v-model="inbound_vars.shadowsock_encryption"
+                :rules="[rules.required]"
+                :items="encryptions"
+                solo
+                density="compact"
+                @update:modelValue="set_new_password"
+            />
+            <v-text-field
+                :label="$t('message.password')"
+                v-model="inbound_vars.shadowsocks_password"
+                :rules="[rules.required]"
+                density="compact"
+                :value="inbound_vars.shadowsocks_password"
+                :readonly="readonly"
+            />
             <v-select
                 :label="$t('message.network')"
                 v-model="inbound_vars.network"
@@ -81,7 +77,7 @@
                 :items="networks"
                 solo
                 density="compact"
-            ></v-select>
+            />
 
             <v-select
                 :label="$t('message.transmission')"
@@ -91,310 +87,25 @@
                 @update:modelValue="updateTransmissionForm()"
                 solo
                 density="compact"
-            ></v-select>
-            <v-row>
-              <v-col
-                  v-if="['quic'].find(member=>member===inbound_vars.transmission)">
-                <v-select
-                    :label="$t('message.encryption')"
-                    v-model="inbound_vars.encryption"
-                    :rules="[rules.required]"
-                    :items="encryptions"
-                    solo
-                    density="compact"
-                ></v-select>
-              </v-col>
-              <v-col
-                  v-if="['kcp','quic'].find(member=>member===inbound_vars.transmission)">
-                <v-text-field
-                    :label="$t('message.password')"
-                    :rules="[rules.required]"
-                    v-model="inbound_vars.password"
-                    density="compact"
-                    :value="inbound_vars.password"
-                ></v-text-field>
-              </v-col>
-            </v-row>
-            <v-select
-                v-if="['quic','kcp'].find(member=>member===inbound_vars.transmission)"
-                :label="$t('message.masquerade')"
-                v-model="inbound_vars.masquerade"
-                :rules="[rules.required]"
-                :items="masquerades"
-                solo
-                density="compact"
-                item-title="name"
-                item-value="value"
-                return-object
-            >
-            </v-select>
-            <section
-                v-if="['kcp'].find(member=>member===inbound_vars.transmission)"
-            >
-              <v-row
-              >
-                <v-col>
-                  <v-text-field
-                      :label="$t('message.mtu')"
-                      :rules="[rules.required]"
-                      v-model="inbound_vars.mtu"
-                      density="compact"
-                  >
-                  </v-text-field>
-                </v-col>
-                <v-col>
-                  <v-text-field
-                      :label="$t('message.tti')"
-                      :rules="[rules.required]"
-                      v-model="inbound_vars.tti"
-                      density="compact"
-                  >
-                  </v-text-field>
-                </v-col>
-              </v-row>
-              <v-row
-              >
-                <v-col>
-                  <v-text-field
-                      :label="$t('message.uplink_capacity')"
-                      :rules="[rules.required]"
-                      v-model="inbound_vars.uplink_capacity"
-                      density="compact"
-                  >
-                  </v-text-field>
-                </v-col>
-                <v-col>
-                  <v-text-field
-                      class="py-0 my-0"
-                      :label="$t('message.downlink_capacity')"
-                      :rules="[rules.required]"
-                      v-model="inbound_vars.downlink_capacity"
-                      density="compact"
-                  >
-                  </v-text-field>
-                </v-col>
-              </v-row>
-              <v-checkbox
-                  v-model="inbound_vars.congestion"
-                  color="primary"
-                  hide-details
-                  :label="$t('message.congestion')"
-                  density="compact"
-              >
-              </v-checkbox>
-              <v-row>
-                <v-col>
-                  <v-text-field
-                      :label="$t('message.read_buffer_size')"
-                      :rules="[rules.required]"
-                      v-model="inbound_vars.read_buffer_size"
-                      density="compact"
-                  >
-                  </v-text-field>
-                </v-col>
-                <v-col>
-                  <v-text-field
-                      :label="$t('message.write_buffer_size')"
-                      :rules="[rules.required]"
-                      v-model="inbound_vars.write_buffer_size"
-                      density="compact"
-                  >
-                  </v-text-field>
-                </v-col>
-              </v-row>
-            </section>
-            <section
+                :readonly="readonly"
+            />
+            <TcpSection
+                v-if="inbound_vars.transmission === 'tcp'"
+                :inbound="inbound_vars"
+            />
+            <WsSection
                 v-if="inbound_vars.transmission === 'ws'"
-            >
-              <v-text-field
-                  v-model="inbound_vars.path"
-                  :label="$t('message.path')"
-                  density="compact"
-              ></v-text-field>
-              <v-row>
-                <v-col>
-                  {{ $t('message.add_header') }}
-                  <v-btn
-                      variant="outlined"
-                      size="small"
-                      @click="createNewHeader()"
-                  >
-                    <v-icon>mdi-plus-box</v-icon>
-                  </v-btn>
-                </v-col>
-              </v-row>
-              <v-row
-                  v-for="item in inbound_vars.request_headers"
-                  :key="item.id"
-                  density="compact"
-              >
-                <v-col
-                    cols="5"
-                >
-                  <v-text-field
-                      v-model="item.inbound_vars.header_name"
-                      :label="$t('message.name')"
-                      density="compact"
-                  >
-                  </v-text-field>
-                </v-col>
-                <v-col
-                    cols="5"
-                >
-                  <v-text-field
-                      v-model="item.header_value"
-                      :label="$t('message.value')"
-                      density="compact"
-                  >
-                  </v-text-field>
-                </v-col>
-                <v-col
-                    cols="2"
-                    density="compact"
-                >
-                  <v-btn
-                      variant="outlined"
-                      size="small"
-                      @click="removeHeader(item.id)"
-                  >
-                    <v-icon>mdi-minus-box</v-icon>
-
-                  </v-btn>
-                </v-col>
-              </v-row>
-            </section>
-            <section
-                v-if="inbound_vars.transmission === 'http'"
-            >
-              <v-text-field
-                  v-model="inbound_vars.path"
-                  :label="$t('message.path')"
-                  density="compact"
-              ></v-text-field>
-              <v-text-field
-                  v-model="inbound_vars.host"
-                  :label="$t('message.host')"
-                  density="compact"
-              ></v-text-field>
-            </section>
-
-            <v-text-field
+                :inbound="inbound_vars"
+            />
+            <GrpcSection
                 v-if="inbound_vars.transmission === 'grpc'"
-                :label="$t('message.service_name')"
-                :rules="[rules.required]"
-                v-model="inbound_vars.service_name"
-                density="compact"
-            ></v-text-field>
-
-            <v-row>
-              <v-col>
-                <v-checkbox
-                    v-if="['tcp','ws'].find(member=>member===inbound_vars.transmission)"
-                    v-model="inbound_vars.acceptProxyProtocol"
-                    color="primary"
-                    hide-details
-                    :label="$t('message.accept_proxy_protocol')"
-                    density="compact"
-                >
-                </v-checkbox>
-              </v-col>
-              <v-col>
-                <v-checkbox
-                    v-if="['tcp'].find(member=>member===inbound_vars.transmission)"
-                    v-model="inbound_vars.http_masquerade"
-                    color="primary"
-                    hide-details
-                    :label="$t('message.http_masquerade')"
-                    density="compact"
-                >
-                </v-checkbox>
-              </v-col>
-            </v-row>
-            <section
-                v-if="inbound_vars.http_masquerade"
-            >
-              <v-row>
-                <v-col>
-                  <v-text-field
-                      :label="$t('message.request_version')"
-                      v-model="inbound_vars.request_version"
-                      :model-value="inbound_vars.request_version || '1.1'"
-                      density="compact"
-                  />
-                  <v-text-field
-                      :label="$t('message.request_method')"
-                      v-model="inbound_vars.request_method"
-                      :model-value="inbound_vars.request_method || 'GET'"
-                      density="compact"
-                  />
-                  <v-text-field
-                      :label="$t('message.request_path')"
-                      v-model="inbound_vars.request_path"
-                      :model-value="inbound_vars.request_path || '/'"
-                      density="compact"
-                  />
-                  <v-text-field
-                      :label="$t('message.response_version')"
-                      v-model="inbound_vars.response_version"
-                      :model-value="inbound_vars.response_version || '1.1'"
-                      density="compact"
-                  />
-                  <v-text-field
-                      :label="$t('message.response_status')"
-                      v-model="inbound_vars.response_status"
-                      :model-value="inbound_vars.response_status || 200"
-                      density="compact"
-                  />
-                  <v-text-field
-                      :label="$t('message.response_status_description')"
-                      v-model="inbound_vars.response_status_description"
-                      :model-value="inbound_vars.response_status_description || 'OK'"
-                      density="compact"
-                  />
-                </v-col>
-              </v-row>
-
-            </section>
-            <v-row>
-              <v-col>
-                <v-checkbox
-                    v-model="inbound_vars.tls"
-                    color="primary"
-                    hide-details
-                    label="TLS"
-                    density="compact"
-                >
-                </v-checkbox>
-              </v-col>
-            </v-row>
-            <section
+                :inbound="inbound_vars"
+            />
+            <TlsSection
+                :inbound="inbound_vars"
                 v-if="inbound_vars.tls || inbound_vars.xtls"
-            >
-              <v-text-field
-                  v-model="inbound_vars.serverName"
-                  :label="$t('message.domain_name')"
-                  density="compact"
-              >
-              </v-text-field>
-              <v-text-field
-                  v-model="inbound_vars.alpn"
-                  label="ALPN"
-                  density="compact"
-              >
-              </v-text-field>
-              <v-select
-                  :label="$t('message.certificate')"
-                  v-model="inbound_vars.certificate"
-                  :rules="[rules.required]"
-                  :items="certificates"
-                  item-title="name"
-                  item-value="id"
-                  solo
-                  density="compact"
-              >
-              </v-select>
-            </section>
-            <v-checkbox
+            />
+            <v-checkbox-btn
                 v-model="inbound_vars.sniffing"
                 color="primary"
                 hide-details
@@ -439,16 +150,24 @@
 </template>
 
 <script>
-import {CERTIFICATE, ENCRYPTIONS, INBOUND, MASQUERADES, NETWORKS, PROTOCOLS, SHADOWSOCKS_ENRYPTIONS, TRANSMISSIONS} from "@/store/constants";
+import {CERTIFICATE, INBOUND, MASQUERADES, NETWORKS, SHADOWSOCKS_ENRYPTIONS, SHADOWSOCKS_TRANSMISSIONS} from "@/store/constants";
 import {mapActions, mapGetters} from "vuex";
 import {DatePicker} from 'v-calendar';
 import {GetShadowsocksDefaultConfig} from "@/store/modules/protocol";
-import {RandomNumber} from "@/store/utils";
 import {GetStream} from "@/store/modules/config_generators";
+import TlsSection from "@/components/inbounds/sections/TlsSection";
+import TcpSection from "@/components/inbounds/sections/TcpSection";
+import WsSection from "@/components/inbounds/sections/WsSection";
+import GrpcSection from "@/components/inbounds/sections/GrpcSection";
+import {GeneratePassword} from "@/store/utils";
 
 export default {
   name: "ShadowsocksForm",
   components: {
+    GrpcSection,
+    WsSection,
+    TcpSection,
+    TlsSection,
     DatePicker
   },
   props: {
@@ -458,15 +177,14 @@ export default {
     return {
       inbound_vars: {},
       inbounds: [],
-      protocols: PROTOCOLS,
       masquerades: MASQUERADES,
-      encryptions: ENCRYPTIONS,
-      shadowsocks_encryptions: SHADOWSOCKS_ENRYPTIONS,
-      transmissions: TRANSMISSIONS,
+      encryptions: SHADOWSOCKS_ENRYPTIONS,
+      transmissions: SHADOWSOCKS_TRANSMISSIONS,
       networks: NETWORKS,
       certificates: [],
       valid: false,
       loading: false,
+      readonly: false,
       rules: {
         required: value => !!value || this.$t('message.required'),
       },
@@ -476,24 +194,42 @@ export default {
   methods: {
     ...mapActions("inbounds", {
       UpdateInbound: INBOUND.UPDATE_INBOUND,
-      AddInbound: INBOUND.ADD_INBOUND
+      AddInbound: INBOUND.ADD_INBOUND,
+      GenPassoword: INBOUND.GET_PASSWORD
     }),
     ...mapActions("certificate", {
       listCertificate: CERTIFICATE.LIST_CERTIFICATE,
     }),
+    async set_new_password (){
+      switch (this.inbound_vars.shadowsock_encryption){
+        case "2022-blake3-aes-128-gcm":
+          await this.GenPassoword(16)
+          this.inbound_vars.shadowsocks_password = this.getPassword
+          this.readonly = true
+          this.inbound_vars.transmission = this.transmissions[0]
+          break
+        case "2022-blake3-aes-256-gcm":
+          await this.GenPassoword(32)
+          this.inbound_vars.shadowsocks_password = this.getPassword
+          this.readonly = true
+          this.inbound_vars.transmission = this.transmissions[0]
+          break
+        case "2022-blake3-chacha20-poly1305":
+          await this.GenPassoword(32)
+          this.inbound_vars.shadowsocks_password = this.getPassword
+          this.readonly = true
+          this.inbound_vars.transmission = this.transmissions[0]
+          break
+        default:
+          this.inbound_vars.shadowsocks_password = GeneratePassword()
+          this.readonly = false
+          this.inbound_vars.transmission = this.transmissions[0]
+      }
+    },
     updateTransmissionForm: function () {
       this.inbound_vars.masquerade = this.masquerades[0]
-    },
-
-    createNewHeader: function () {
-      this.inbound_vars.request_headers.push({id: RandomNumber()})
-    },
-    removeHeader: function (header_id) {
-      for (let i = 0; i < this.inbound_vars.request_headers.length; i++) {
-        if (this.inbound_vars.request_headers[i].id === header_id) {
-          this.inbound_vars.request_headers.splice(i, 1)
-        }
-      }
+      this.inbound_vars.tls = false
+      this.inbound_vars.xtls = false
     },
     async submit() {
       this.loading = true
@@ -517,9 +253,11 @@ export default {
       let settings = {}
       let stream_settings = {}
       settings = {
-        "method": this.inbound_vars.shadowsocks_encryption,
+        "method": this.inbound_vars.shadowsock_encryption,
         "password": this.inbound_vars.shadowsocks_password,
-        "network": this.inbound_vars.network
+        "network": this.inbound_vars.network,
+        "email": this.inbound_vars.port + "@xview.local",
+        "level": 0
       }
 
       stream_settings = GetStream(this.inbound_vars)
@@ -540,6 +278,10 @@ export default {
     ...mapGetters('certificate',
         {
           getCertificateList: 'getCertificateList',
+        }),
+    ...mapGetters('inbounds',
+        {
+          getPassword: 'getPassword',
         }),
   },
   async mounted() {

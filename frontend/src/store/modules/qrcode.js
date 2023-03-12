@@ -24,6 +24,7 @@ export const MakeConfigString = function (inbound) {
 
     let config = ""
     let server = ''
+    let extra_configs = []
     switch (inbound.protocol) {
         case 'vless':
             config = "vless://" + inbound.protocol_setting.clients[0].id + "@"
@@ -58,13 +59,49 @@ export const MakeConfigString = function (inbound) {
             break
         case "shadowsocks":
             server = inbound.transport.tlsSettings ? inbound.transport.tlsSettings.serverName : window.location.hostname
-            config = inbound.protocol_setting.method + ":" + inbound.protocol_setting.password + "@" + server + ":" + inbound.port
-            config = btoa(config)
+            config = btoa(inbound.protocol_setting.method + ":" + inbound.protocol_setting.password).replaceAll("=","") + "@" + server + ":" + inbound.port
+            extra_configs = [""]
+            if (inbound.transport.network === "ws") {
+                extra_configs.push("path="+ inbound.transport.wsSettings.path)
+            }else if (inbound.transport.network === "quic") {
+                extra_configs.push("mode=quic")
+                extra_configs.push("host=" + inbound.transport.quicSettings.host)
+            }
+            if (inbound.transport.security === "tls"){
+                extra_configs.push("host="+ inbound.transport.tlsSettings.serverName)
+                extra_configs.push("tls")
+            }
+            if (extra_configs.length > 1){
+                config += "/?plugin=v2ray-plugin"
+            }
+            config += encodeURIComponent(extra_configs.join(";"))
             config = "ss://" + config + "#" + inbound.name
             break
         case "trojan":
+            config = "?type=" + inbound.transport.network
+            if (inbound.transport.security === "tls"){
+                config += "&security="+ inbound.transport.security
+                config += "&alpn="+ inbound.transport.tlsSettings.alpn.replaceAll(",","%2C")
+                config += "&host="+ inbound.transport.tlsSettings.serverName
+            }
+            if (inbound.transport.security === "xtls"){
+                config += "&security="+ inbound.transport.security
+                config += "&alpn="+ inbound.transport.xtlsSettings.alpn.replaceAll(",","%2C")
+                config += "&host="+ inbound.transport.xtlsSettings.serverName
+            }
+            if (inbound.transport.network === "ws"){
+                config += "&path="+ inbound.transport.wsSettings.path.replace("/", "%2F")
+            }
+            if (inbound.transport.network === "http"){
+                config += "&host="+ inbound.transport.httpSettings.host
+                config += "&path="+ inbound.transport.httpSettings.path.replace("/", "%2F")
+            }
+            if (inbound.transport.network === "grpc"){
+                config += "&path="+ inbound.transport.grpcSettings.serviceName.replace("/", "%2F")
+            }
+
             server = inbound.transport.tlsSettings ? inbound.transport.tlsSettings.serverName : inbound.transport.xtlsSettings ? inbound.transport.xtlsSettings.serverName : window.location.hostname
-            config = "trojan://" + inbound.protocol_setting.clients[0].password + "@" + server + ":" + inbound.port + "#" + inbound.name
+            config = "trojan://" + inbound.protocol_setting.clients[0].password + "@" + server + ":" + inbound.port + config + "#" + inbound.name
             break
     }
     return config

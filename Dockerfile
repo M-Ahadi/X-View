@@ -7,11 +7,14 @@ RUN yarn build
 
 
 FROM python:3.11-slim
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
 RUN apt update &&\
      apt install --no-install-recommends -y \
      nginx \
      curl \
      unzip \
+     openssl \
      supervisor &&\
      rm -f /var/www/html/* &&\
      mkdir -p /etc/nginx/routes \
@@ -53,7 +56,8 @@ VOLUME /x-view/db
 RUN apt remove -y \
     unzip &&\
     apt autoremove -y &&\
-    rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/* &&\
+    mkdir /var/log/x-core
 
 HEALTHCHECK --interval=30s --timeout=3s CMD  ./healthcheck.sh
 

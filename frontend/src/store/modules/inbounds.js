@@ -8,12 +8,14 @@ const state = () => ({
     inbounds: [],
     inbound: null,
     status: '',
+    password: '',
 })
 
 const getters = {
     getInboundList: state => state.inbounds,
     getStatus: state => state.status,
     getCount: state => state.count,
+    getPassword: state => state.password,
     getInboundDetails: state => state.inbound
 }
 
@@ -103,6 +105,20 @@ const actions = {
                 console.error("error", error)
             })
     },
+    [INBOUND.GET_PASSWORD]: async ({commit},payload) => {
+        let header = {}
+        const token = await getToken()
+        if (token) {
+            header['Authorization'] = 'Bearer ' + token
+        }
+        await HTTP.get('generate_password/' + payload + "/", {headers: header})
+            .then((result) => {
+                commit(INBOUND.GET_PASSWORD, result)
+            }).catch((error) => {
+                commit(INBOUND.ERROR,error)
+                console.error("error", error)
+            })
+    },
 }
 
 
@@ -120,7 +136,10 @@ const mutations = {
             router.push({name: 'logout'});
         }
         state.status = payload.response.status
-    }
+    },
+    [INBOUND.GET_PASSWORD]: (state, payload) => {
+        state.password = payload.data.password
+    },
 }
 
 
