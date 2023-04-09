@@ -1,9 +1,9 @@
 FROM node:18.12-slim as build-stage
 WORKDIR /app
 COPY /frontend/package.json ./
-RUN yarn
+RUN npm install
 COPY /frontend/ ./
-RUN yarn build
+RUN npm run build
 
 
 FROM python:3.11-slim
