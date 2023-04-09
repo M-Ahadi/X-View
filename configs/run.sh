@@ -7,5 +7,5 @@ python manage.py migrate
 python manage.py initialize_data
 python manage.py make_nginx_server
 python manage.py load_configs
-
+export VUE_APP_NGINX_PORT=$NGINX_PORT
 exec "$@"

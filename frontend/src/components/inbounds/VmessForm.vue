@@ -221,6 +221,7 @@ export default {
       const NewConfig = new FormData();
       NewConfig.append("protocol", "vmess")
       NewConfig.append("name", this.inbound_vars.name)
+      NewConfig.append("behind_nginx", this.inbound_vars.behind_nginx || false)
       NewConfig.append("bindip", this.inbound_vars.bindip)
       NewConfig.append("port", this.inbound_vars.port)
       if (this.inbound_vars.certificate) {

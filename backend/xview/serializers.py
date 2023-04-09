@@ -17,13 +17,12 @@ class UserTokenObtainPairSerializer(TokenObtainPairSerializer):
 
 
 class InboundSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Inbound
         fields = ['id', 'name', 'enable', 'sniffing',
                   'protocol', 'protocol_setting', 'transport', 'bindip',
                   'port', 'up', 'down', "total",
-                  'expire','certificate']
+                  'expire', 'certificate', 'behind_nginx']
 
 
 class InboundStatusSerializer(serializers.ModelSerializer):

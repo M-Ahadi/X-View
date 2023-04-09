@@ -4,7 +4,6 @@ X-View is an interface for [X-ray Core](https://github.com/XTLS/Xray-core) to ma
 
 
 ## Todos
-- [ ] Add option to put vpn behind nginx
 - [ ] Add option to put vpn behind cloud
 - [ ] Support multi-user
 - [ ] Add data traffic monitoring
@@ -25,7 +24,8 @@ X-View is an interface for [X-ray Core](https://github.com/XTLS/Xray-core) to ma
   - English
 - [x] Support https access panel (self-provided domain name + ssl certificate)
 - [x] Add certificate to nginx
-- [X] Support Dark and Light Them
+- [x] Support Dark and Light Them
+- [x] Add option to put vpn behind nginx
 
 For more advanced configuration items, see Panel
 

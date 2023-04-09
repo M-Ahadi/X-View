@@ -49,7 +49,7 @@ export const GetVlessDefaultConfig = function (){
         congestion : false,
         readBufferSize : 2,
         writeBufferSize : 2,
-        path : '/',
+        path : '/xview',
         host : '',
         encryption : QUIC_ENCRYPTIONS[0],
         service_name : '',
@@ -59,7 +59,8 @@ export const GetVlessDefaultConfig = function (){
         response_version: "1.1",
         response_status: 200,
         response_status_description: "OK",
-        header_name: ''
+        header_name: '',
+        behind_nginx: false
 
     }
 }
@@ -94,7 +95,7 @@ export const GetVmessDefaultConfig = function (){
         congestion : false,
         readBufferSize : 2,
         writeBufferSize : 2,
-        path : '/',
+        path : '/xview',
         host : '',
         encryption : QUIC_ENCRYPTIONS[0],
         service_name : '',
@@ -104,7 +105,8 @@ export const GetVmessDefaultConfig = function (){
         response_version: "1.1",
         response_status: 200,
         response_status_description: "OK",
-        header_name: ''
+        header_name: '',
+        behind_nginx: false
 
     }
 }
@@ -139,7 +141,7 @@ export const  GetShadowsocksDefaultConfig = function () {
         congestion : false,
         readBufferSize : 2,
         writeBufferSize : 2,
-        path : '/',
+        path : '/xview',
         host : '',
         encryption : QUIC_ENCRYPTIONS[0],
         shadowsock_encryption : SHADOWSOCKS_ENRYPTIONS[0],
@@ -150,7 +152,8 @@ export const  GetShadowsocksDefaultConfig = function () {
         response_version: "1.1",
         response_status: 200,
         response_status_description: "OK",
-        header_name: ''
+        header_name: '',
+        behind_nginx: false
     }
 }
 
@@ -171,7 +174,7 @@ export const  GetTrojanDefaultConfig = function () {
         alpn : '',
         h2: false,
         h1:false,
-        path : '/',
+        path : '/xview',
         host : '',
         flow: FLOWS[0],
         masquerade : '',
@@ -191,7 +194,8 @@ export const  GetTrojanDefaultConfig = function () {
         response_status: 200,
         response_status_description: "OK",
         header_name: '',
-        acceptProxyProtocol: false
+        acceptProxyProtocol: false,
+        behind_nginx: false
 
     }
 }
