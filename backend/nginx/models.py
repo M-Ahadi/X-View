@@ -47,15 +47,14 @@ class Nginx(models.Model):
                 ssl_certificate /etc/nginx/conf.d/certificate.pem;
                 ssl_certificate_key /etc/nginx/conf.d/privatekey.pem;
                 {data.extra_config}
-                """)
+                """.replace("\r", ""))
             with open("/etc/nginx/conf.d/certificate.pem", "w") as f:
-                f.write(data.certificate.certificate.replace(",","\n"))
+                f.write(data.certificate.certificate.replace(",", "\n"))
             with open("/etc/nginx/conf.d/privatekey.pem", "w") as f:
-                f.write(data.certificate.privatekey.replace(",","\n"))
+                f.write(data.certificate.privatekey.replace(",", "\n"))
         else:
             with open("/etc/nginx/conf.d/server.conf", "w") as f:
                 f.write(f"""
                 listen      {os.getenv('NGINX_PORT')} default_server;
                 server_name {server_name};
-                """)
-
+                """.replace("\r", ""))
