@@ -42,6 +42,7 @@ class Inbound(models.Model):
     sniffing = models.BooleanField(default=True)
     tags = models.CharField(max_length=50, default="")
     certificate = models.ForeignKey(Certificate, on_delete=models.CASCADE, related_name='inbound', null=True,blank=True)
+    behind_nginx = models.BooleanField(default=False)
 
     class Meta:
         ordering = ["id"]

@@ -238,6 +238,7 @@ export default {
       NewConfig.append("name", this.inbound_vars.name)
       NewConfig.append("bindip", this.inbound_vars.bindip)
       NewConfig.append("port", this.inbound_vars.port)
+      NewConfig.append("behind_nginx", this.inbound_vars.behind_nginx || false)
       if (this.inbound_vars.certificate) {
         NewConfig.append("certificate", this.inbound_vars.certificate)
       }

@@ -1,6 +1,7 @@
 <template>
   <v-text-field
       v-model="inbound_vars.path"
+      :model-value="inbound_vars.path"
       :label="$t('message.path')"
       density="compact"
   />
@@ -70,6 +71,15 @@
           color="primary"
           hide-details
           label="TLS"
+          density="compact"
+      />
+    </v-col>
+    <v-col>
+      <v-checkbox-btn
+          v-model="inbound_vars.behind_nginx"
+          color="primary"
+          hide-details
+          :label="$t('message.behind_nginx')"
           density="compact"
       />
     </v-col>

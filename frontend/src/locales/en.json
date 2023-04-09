@@ -109,6 +109,7 @@
     "nginx": "Nginx",
     "extra_config": "Extra Config",
     "nginx_port": "If you configure different port than default port, x-view will listen on both ports, but if you configure same port, it will be overwrite to https.",
-    "vless_alert": "Vless without TLS or XTLS is not secure. You should enable one of them."
+    "vless_alert": "Vless without TLS or XTLS is not secure. You should enable one of them.",
+    "behind_nginx": "Behind Nginx"
   }
 }
