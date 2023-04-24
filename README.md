@@ -3,16 +3,6 @@
 X-View is an interface for [X-ray Core](https://github.com/XTLS/Xray-core) to make VPN configuration. This project is inspired by [x-ui](https://github.com/vaxilu/x-ui) project.
 
 
-## Todos
-- [ ] Add option to put vpn behind cloud
-- [ ] Support multi-user
-- [ ] Add data traffic monitoring
-- [ ] Complete admin panel monitoring
-- [ ] Traffic statistics, limit traffic, limit expiration time
-- [ ] Add telegram alert
-- [ ] Add reality security
-
-
 # Features
 - [x] Supported protocols: vmess, vless,  shadowsocks, trojan, dokodemo-door, socks, http
 - [x] Support for configuring more transport configurations
@@ -26,6 +16,14 @@ X-View is an interface for [X-ray Core](https://github.com/XTLS/Xray-core) to ma
 - [x] Add certificate to nginx
 - [x] Support Dark and Light Them
 - [x] Add option to put vpn behind nginx
+- [ ] Add option to put vpn behind cloud
+- [ ] Support multi-user
+- [ ] Add data traffic monitoring
+- [ ] Complete admin panel monitoring
+- [ ] Traffic statistics, limit traffic, limit expiration time
+- [ ] Add telegram alert
+- [ ] Add reality security
+
 
 For more advanced configuration items, see Panel
 
