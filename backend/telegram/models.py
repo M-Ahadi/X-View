@@ -1,6 +1,5 @@
+import requests
 from django.db import models
-
-# Create your models here.
 
 
 class Telegram(models.Model):
@@ -10,3 +9,14 @@ class Telegram(models.Model):
 
     class Meta:
         ordering = ["id"]
+
+    def send_message(self, message):
+        if self.enable:
+            try:
+                message = message.replace(" ", "%20").replace("\n", "%0A")
+                url = f"https://api.telegram.org/bot{self.token}/sendMessage"
+                payload = f"chat_id={self.chatid}&text={message}&parse_mode=Markdown"
+                headers = {'Content-Type': "application/x-www-form-urlencoded"}
+                requests.request("POST", url, data=payload, headers=headers)
+            except Exception as e:
+                print(e)
