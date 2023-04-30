@@ -117,6 +117,5 @@ class GenerateKeyView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, key_length):
-        # result = subprocess.run(["/usr/bin/openssl","rand","-base64", str(key_length)], capture_output=True)
         result = subprocess.run(["openssl", "rand", "-base64", str(key_length)], capture_output=True)
         return Response({"password": result.stdout})

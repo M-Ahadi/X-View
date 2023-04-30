@@ -6,12 +6,14 @@ import router from "@/router";
 
 const state = () => ({
     certificates: [],
-    status: null
+    status: null,
+    result: null,
 })
 
 const getters = {
     getCertificateList: state => state.certificates,
-    getStatus: state => state.status
+    getStatus: state => state.status,
+    getResult: state => state.result
 }
 
 const actions = {
@@ -94,6 +96,10 @@ const mutations = {
             router.push({name: 'logout'});
         }
         state.status = payload.response.status
+        if (payload.response.data.non_field_errors ){
+            state.result = payload.response.data.non_field_errors[0]
+        }
+
     }
 }
 
