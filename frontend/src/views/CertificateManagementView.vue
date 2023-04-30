@@ -232,6 +232,12 @@ export default {
             this.$router.go({name: 'certificates'});
             break
           }
+          case 400:{
+            this.error_message = this.getResult
+            this.showError = true
+            this.loading = false
+            break
+          }
           default: {
             this.error_message = this.$t("message.service_unavailable")
             this.showError = true
@@ -284,7 +290,8 @@ export default {
     ...mapGetters('certificate',
         {
           getCertificates: 'getCertificateList',
-          getStatus: 'getStatus'
+          getStatus: 'getStatus',
+          getResult: 'getResult'
     })
   },
   async mounted() {

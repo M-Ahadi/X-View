@@ -41,7 +41,8 @@ class Inbound(models.Model):
     expire = models.IntegerField(blank=True, null=True)
     sniffing = models.BooleanField(default=True)
     tags = models.CharField(max_length=50, default="")
-    certificate = models.ForeignKey(Certificate, on_delete=models.CASCADE, related_name='inbound', null=True,blank=True)
+    certificate = models.ForeignKey(Certificate, on_delete=models.CASCADE, related_name='inbound', null=True,
+                                    blank=True)
     behind_nginx = models.BooleanField(default=False)
 
     class Meta:
@@ -154,25 +155,25 @@ class Inbound(models.Model):
                     "key": inbound.certificate.privatekey.split(","),
                 }]
             inbounds_config.append(
-            {
-                "listen": inbound.bindip,
-                "port": inbound.port,
-                "protocol": inbound.protocol,
-                "settings": json.loads(inbound.protocol_setting),
-                "streamSettings": streamSettings,
-                "tag": "inbound-" + str(inbound.port),
-                "sniffing": {
-                    "enabled": inbound.sniffing,
-                    "destOverride": [
-                        "http",
-                        "tls"
-                    ]
+                {
+                    "listen": inbound.bindip,
+                    "port": inbound.port,
+                    "protocol": inbound.protocol,
+                    "settings": json.loads(inbound.protocol_setting),
+                    "streamSettings": streamSettings,
+                    "tag": "inbound-" + str(inbound.port),
+                    "sniffing": {
+                        "enabled": inbound.sniffing,
+                        "destOverride": [
+                            "http",
+                            "tls"
+                        ]
+                    }
                 }
-            }
             )
         total_config = {}
         total_config.update(rules)
         total_config['inbounds'] = inbounds_config
         total_config.update(outbound)
-        with open("config.json","w") as f:
+        with open("config.json", "w") as f:
             json.dump(total_config, f, indent=2)
