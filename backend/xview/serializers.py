@@ -34,11 +34,17 @@ class InboundStatusSerializer(serializers.ModelSerializer):
 
 class CertificateSerializer(serializers.ModelSerializer):
 
+    def validate_privatekey(self, value):
+        CertificateValidators.is_valid_private_key_format(value)
+        CertificateValidators.is_valid_private_key(value)
+        return value
+
+    def validate_certificate(self, value):
+        CertificateValidators.is_valid_certificate_format(value)
+        CertificateValidators.is_valid_certificate(value)
+        return value
+
     def validate(self, attrs):
-        CertificateValidators.is_valid_private_key_format(attrs['privatekey'])
-        CertificateValidators.is_valid_private_key(attrs['privatekey'])
-        CertificateValidators.is_valid_certificate_format(attrs['certificate'])
-        CertificateValidators.is_valid_certificate(attrs['certificate'])
         CertificateValidators.private_key_and_certificate_matches(attrs['privatekey'], attrs['certificate'])
         return attrs
 
